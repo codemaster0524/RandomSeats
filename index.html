@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>자리 배치 + 성별 구분 고정</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #e9ecef;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  #dynamic-island {
+    position: relative;
+    width: 280px;
+    height: 50px;
+    background: #222;
+    border-radius: 28px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .button {
+    width: 36px;
+    height: 36px;
+    background: #444;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: #eee;
+    font-size: 18px;
+  }
+  .button:hover {
+    background: #666;
+  }
+  #seat-container {
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-gap: 12px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #f0f0f0;
+  }
+  .seat {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(120, 120, 120, 0.4);
+    border: 1px solid #bbb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    user-select: none;
+    cursor: default;
+    transition: background 0.3s, box-shadow 0.3s;
+    color: white;
+  }
+  .seat.male {
+    background: linear-gradient(135deg, #6a8efc, #4a6efc);
+    box-shadow: 0 4px 8px rgba(74,110,252,0.4);
+  }
+  .seat.female {
+    background: linear-gradient(135deg, #fc6a8e, #fc4a6e);
+    box-shadow: 0 4px 8px rgba(252,74,110,0.4);
+  }
+  .empty {
+    width: 50px;
+    height: 50px;
+  }
+</style>
+</head>
+<body>
+
+<div id="dynamic-island">
+  <div class="button" id="start-button" title="실행"><i class="fa-solid fa-play"></i></div>
+  <div class="button" id="reset-button" title="초기화"><i class="fa-solid fa-rotate-left"></i></div>
+  <div class="button" id="photo-button" title="사진 저장"><i class="fa-solid fa-camera"></i></div>
+  <div class="button" id="bug-button" title="버그 신고" onclick="location.href='mailto:eunsung_lee@hotmail.com'"><i class="fa-solid fa-bug"></i></div>
+  <div class="button" id="info-button" title="정보"><i class="fa-solid fa-circle-info"></i></div>
+</div>
+
+<div id="seat-container"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const seatContainer = document.getElementById('seat-container');
+  const startButton = document.getElementById('start-button');
+  const resetButton = document.getElementById('reset-button');
+  const photoButton = document.getElementById('photo-button');
+  const infoButton = document.getElementById('info-button');
+
+  const pattern = [
+    'QOIXXIOQ',
+    'OQIXXIQO',
+    'QOIOOIOQ',
+    'OQIOQIQO',
+    'QOIQOIOQ'
+  ];
+
+  // 예시 하드코딩 이름 30명, 성별 고정 (남:male, 여:female)
+const entries = [
+  {name: '강태경', gender: 'male'},
+  {name: '고율', gender: 'female'},
+  {name: '권하은', gender: 'female'},
+  {name: '김민서', gender: 'female'},
+  {name: '김민지', gender: 'female'},
+  {name: '김윤환', gender: 'male'},
+  {name: '류선우', gender: 'male'},
+  {name: '박종훈', gender: 'male'},
+  {name: '박주형', gender: 'male'},
+  {name: '박지호', gender: 'male'},
+  {name: '양서진', gender: 'male'},
+  {name: '오수빈', gender: 'male'},
+  {name: '유은지', gender: 'female'},
+  {name: '윤경진', gender: 'male'},
+  {name: '윤선유', gender: 'female'},
+  {name: '이소은', gender: 'female'},
+  {name: '이은성', gender: 'male'},
+  {name: '이하윤', gender: 'female'},
+  {name: '이현민', gender: 'male'},
+  {name: '정시목', gender: 'male'},
+  {name: '정유현', gender: 'female'},
+  {name: '정재현', gender: 'male'},
+  {name: '정해주', gender: 'female'},
+  {name: '조수아', gender: 'female'},
+  {name: '진혜원', gender: 'female'},
+  {name: '천마루', gender: 'male'},
+  {name: '최선우', gender: 'male'},
+  {name: '하지현', gender: 'female'},
+  {name: '황은아', gender: 'female'},
+  {name: '황지운', gender: 'male'}
+];
+
+  // 초기 빈 좌석 렌더링
+  function renderEmptySeats() {
+    seatContainer.innerHTML = '';
+    for(let row = 0; row < pattern.length; row++) {
+      for(let col = 0; col < pattern[row].length; col++) {
+        const ch = pattern[row][col];
+        if(ch === 'X' || ch === 'I') {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          seatContainer.appendChild(empty);
+          continue;
+        }
+        const seat = document.createElement('div');
+        seat.classList.add('seat');
+        if(ch === 'Q') seat.classList.add('female');
+        else if(ch === 'O') seat.classList.add('male');
+        seat.textContent = '';
+        seatContainer.appendChild(seat);
+      }
+    }
+  }
+
+  // 실행 버튼 누르면 랜덤 배치(성별 맞게)
+  function assignSeats() {
+    seatContainer.innerHTML = '';
+    // 남자만 자리 O, 여자만 자리 Q 수집
+    const maleSeats = [];
+    const femaleSeats = [];
+    for(let row=0; row<pattern.length; row++) {
+      for(let col=0; col<pattern[row].length; col++) {
+        const ch = pattern[row][col];
+        if(ch === 'O') maleSeats.push({row, col});
+        else if(ch === 'Q') femaleSeats.push({row, col});
+      }
+    }
+    // 남/여 인원 필터링
+    const males = entries.filter(e => e.gender === 'male');
+    const females = entries.filter(e => e.gender === 'female');
+
+    // 섞기 함수
+    const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+    const shuffledMales = shuffle([...males]);
+    const shuffledFemales = shuffle([...females]);
+
+    // 좌석 초기화
+    const seatMap = Array(pattern.length).fill(null).map(() => Array(pattern[0].length).fill(null));
+
+    // 남자 좌석 배치
+    for(let i=0; i < maleSeats.length; i++) {
+      if(i < shuffledMales.length) seatMap[maleSeats[i].row][maleSeats[i].col] = shuffledMales[i];
+      else seatMap[maleSeats[i].row][maleSeats[i].col] = null;
+    }
+    // 여자 좌석 배치
+    for(let i=0; i < femaleSeats.length; i++) {
+      if(i < shuffledFemales.length) seatMap[femaleSeats[i].row][femaleSeats[i].col] = shuffledFemales[i];
+      else seatMap[femaleSeats[i].row][femaleSeats[i].col] = null;
+    }
+
+    // 렌더링
+    for(let row=0; row<pattern.length; row++) {
+      for(let col=0; col<pattern[row].length; col++) {
+        const ch = pattern[row][col];
+        if(ch === 'X' || ch === 'I') {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          seatContainer.appendChild(empty);
+          continue;
+        }
+        const seat = document.createElement('div');
+        seat.classList.add('seat');
+        if(ch === 'Q') seat.classList.add('female');
+        else if(ch === 'O') seat.classList.add('male');
+
+        const occupant = seatMap[row][col];
+        seat.textContent = occupant ? occupant.name : '';
+        seatContainer.appendChild(seat);
+      }
+    }
+  }
+
+  // 초기 상태
+  renderEmptySeats();
+
+  startButton.onclick = () => assignSeats();
+  resetButton.onclick = () => renderEmptySeats();
+
+  photoButton.onclick = () => {
+    html2canvas(seatContainer).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'seat_arrangement.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  };
+
+infoButton.onclick = () => {
+  const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100vw';
+  modal.style.height = '100vh';
+  modal.style.background = 'rgba(0,0,0,0.5)';
+  modal.style.display = 'flex';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+  modal.style.zIndex = '9999';
+
+  const box = document.createElement('div');
+  box.style.background = '#fff';
+  box.style.borderRadius = '12px';
+  box.style.padding = '24px 32px';
+  box.style.maxWidth = '440px';
+  box.style.textAlign = 'center';
+  box.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
+  box.innerHTML = `
+    <h2 style="margin-top:0;font-size:20px;">자리 배치 시스템 v2.1.2</h2>
+    <p style="font-size:14px;line-height:1.6;">
+      제작자: 이은성<br><br>
+      본 시스템은 성별 구분에 따른 고정된 자리 패턴에 기반하여,<br>
+      사용자가 입력한 이름을 자동으로 배치합니다.<br>
+      배치된 상태는 이미지로 저장할 수 있습니다.<br><br>
+      모든 코드 및 자료는 비상업적 개인 사용에 한하여 자유롭게 사용할 수 있으며,<br>
+      무단 복제, 상업적 이용 또는 재배포를 금합니다.<br>
+      본 소프트웨어는 '있는 그대로(as-is)' 제공되며<br>
+      사용에 따른 모든 책임은 사용자에게 있습니다.
+    </p>
+    <button style="margin-top:16px;padding:8px 16px;font-weight:600;border:none;border-radius:8px;background:#4a6efc;color:white;cursor:pointer;">닫기</button>
+  `;
+
+  const closeBtn = box.querySelector('button');
+  closeBtn.onclick = () => document.body.removeChild(modal);
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+};
+</script>
+
+</body>
+</html>
