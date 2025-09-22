@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>RandomSeats</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" href="https://codemaster0524.github.io/RandomSeats/favicon.svg" type="image/svg+xml">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+/* 회전 대응 wrapper */
+.seat-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.seat-wrapper.rotate-left {
+  transform: rotate(90deg);
+}
+.seat-wrapper.rotate-right {
+  transform: rotate(-90deg);
+}
+
+    html, body {
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+    }
+    
+    #wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    /* 쌤 뷰 적용 시 좌석 컨테이너만 회전 */
+    #wrapper.teacher-view #seat-container {
+      transform: rotate(180deg);
+    }
+
+    /* 쌤 뷰 적용 시 텍스트는 다시 정상 방향으로 회전 */
+    #wrapper.teacher-view .seat,
+    #wrapper.teacher-view .desk {
+      transform: rotate(180deg);
+    }
+
+    /* 다이나믹 아일랜드는 항상 정상 방향 유지 */
+    #wrapper.teacher-view #dynamic-island {
+      transform: none;
+    }
+    
+    #dynamic-island {
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .button {
+      width: 44px;
+      height: 44px;
+      background: rgba(60, 60, 60, 0.8);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .button:hover {
+      background: rgba(80, 80, 80, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .button:hover::before {
+      left: 100%;
+    }
+    
+    .button:active {
+      transform: translateY(0);
+    }
+    
+    #seat-container {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      gap: 16px;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .seat {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      font-size: 11px;
+      user-select: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      line-height: 1.1;
+    }
+    
+    .seat::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+      border-radius: 14px;
+    }
+    
+    .seat.male {
+      background: linear-gradient(135deg, #667eea, #4facfe);
+      box-shadow: 
+        0 8px 16px rgba(102, 126, 234, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .seat.female {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      box-shadow: 
+        0 8px 16px rgba(240, 147, 251, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .seat:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 
+        0 12px 24px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    .seat.dragging {
+      opacity: 0.5;
+      transform: rotate(5deg) scale(1.1);
+      z-index: 1000;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .seat.drag-over {
+      border: 3px solid #4ade80;
+      box-shadow: 
+        0 0 20px rgba(74, 222, 128, 0.4),
+        0 12px 24px rgba(0, 0, 0, 0.15);
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { 
+        border-color: #4ade80;
+        box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+      }
+      50% { 
+        border-color: #22c55e;
+        box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+      }
+    }
+    
+    .empty {
+      width: 60px;
+      height: 60px;
+    }
+    
+/* 교탁: 색상만 변경 */
+.desk {
+  grid-column: span 2;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+
+  /* 🎨 원하는 색상 팔레트 */
+  background: linear-gradient(135deg, #6a11cb, #2575fc); /* 보라→파랑 */
+  box-shadow:
+    0 8px 16px rgba(37, 117, 252, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.desk::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+  border-radius: 14px;
+}
+
+.desk:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+    
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .modal-box {
+      background: white;
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+      animation: scaleIn 0.3s ease-out;
+    }
+    
+    .modal-box h2 {
+      margin-bottom: 20px;
+      color: #2d3748;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .modal-box label {
+      font-weight: 500;
+      display: block;
+      margin-bottom: 16px;
+      cursor: pointer;
+      color: #4a5568;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .modal-box input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    .modal-box button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      border: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    .modal-box button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .modal-box p {
+      line-height: 1.6;
+      color: #4a5568;
+      margin-bottom: 16px;
+    }
+    
+    /* 이미지 저장용 임시 컨테이너 스타일 */
+    #temp-container {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      background: white;
+      padding: 32px;
+      border-radius: 20px;
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      gap: 16px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      #seat-container {
+        grid-template-columns: repeat(8, 50px);
+        gap: 12px;
+        padding: 24px;
+      }
+      
+      .seat, .empty {
+        width: 50px;
+        height: 50px;
+        font-size: 10px;
+      }
+      
+      .button {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+      
+      #dynamic-island {
+        gap: 8px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="wrapper">
+  <div id="dynamic-island">
+    <div class="button" id="start-button" title="실행"><i class="fa-solid fa-play"></i></div>
+    <div class="button" id="reset-button" title="초기화"><i class="fa-solid fa-rotate-left"></i></div>
+    <div class="button" id="photo-button" title="저장"><i class="fa-solid fa-save"></i></div>
+    <div class="button" id="upload-button" title="JSON 불러오기"><i class="fa-solid fa-file-upload"></i></div>
+    <div class="button" id="settings-button" title="설정"><i class="fa-solid fa-gear"></i></div>
+    <div class="button" id="bug-button" title="버그 신고" onclick="location.href='mailto:eunsung_lee@hotmail.com'"><i class="fa-solid fa-bug"></i></div>
+    <div class="button" id="info-button" title="정보"><i class="fa-solid fa-circle-info"></i></div>
+  </div>
+
+  <div id="seat-container"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+let deskVisible = true;
+let teacherView = false;
+let currentSeatAssignment = null;
+let draggedSeat = null;
+
+const pattern = [
+  'XXITTIXX',
+  'OQIOQIOQ',
+  'QOIQOIQO',
+  'OQIOQIOQ',
+  'QOIQOIQO',
+  'OQIOOIOQ'
+];
+
+const entries = [
+  {name: '강태경', gender: 'male'}, {name: '고 율', gender: 'female'},
+  {name: '권하은', gender: 'female'}, {name: '김민서', gender: 'female'},
+  {name: '김민지', gender: 'female'}, {name: '김윤환', gender: 'male'},
+  {name: '류선우', gender: 'male'}, {name: '박종훈', gender: 'male'},
+  {name: '박주형', gender: 'male'}, {name: '박지호', gender: 'male'},
+  {name: '양서진', gender: 'male'}, {name: '오수빈', gender: 'male'},
+  {name: '유은지', gender: 'female'}, {name: '윤경진', gender: 'male'},
+  {name: '윤선유', gender: 'female'}, {name: '이소은', gender: 'female'},
+  {name: '이은성', gender: 'male'}, {name: '이하윤', gender: 'female'},
+  {name: '이현민', gender: 'male'}, {name: '정시목', gender: 'male'},
+  {name: '정유현', gender: 'female'}, {name: '정재현', gender: 'male'},
+  {name: '정해주', gender: 'female'}, {name: '조수아', gender: 'female'},
+  {name: '진혜원', gender: 'female'}, {name: '천마루', gender: 'male'},
+  {name: '최선우', gender: 'male'}, {name: '하지현', gender: 'female'},
+  {name: '황은아', gender: 'female'}, {name: '황지운', gender: 'male'}
+];
+
+const seatContainer = document.getElementById('seat-container');
+const startButton = document.getElementById('start-button');
+const resetButton = document.getElementById('reset-button');
+const photoButton = document.getElementById('photo-button');
+const settingsButton = document.getElementById('settings-button');
+const infoButton = document.getElementById('info-button');
+const wrapper = document.getElementById('wrapper');
+
+function renderEmptySeats() {
+  seatContainer.innerHTML = '';
+  for (let row = 0; row < pattern.length; row++) {
+    for (let col = 0; col < pattern[row].length; col++) {
+      const ch = pattern[row][col];
+      if (ch === 'X' || ch === 'I') {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        seatContainer.appendChild(empty);
+        continue;
+      }
+      if (ch === 'T') {
+        if (!deskVisible) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          seatContainer.appendChild(empty);
+          continue;
+        }
+        if (col > 0 && pattern[row][col - 1] === 'T') continue;
+        const desk = document.createElement('div');
+        desk.classList.add('desk');
+        desk.textContent = '교탁';
+        seatContainer.appendChild(desk);
+        continue;
+      }
+      const seat = document.createElement('div');
+      seat.classList.add('seat');
+      if (ch === 'Q') seat.classList.add('female');
+      else if (ch === 'O') seat.classList.add('male');
+      seat.textContent = '';
+      seatContainer.appendChild(seat);
+    }
+  }
+}
+
+function renderSeatsWithAssignment() {
+  seatContainer.innerHTML = '';
+  for (let row = 0; row < pattern.length; row++) {
+    for (let col = 0; col < pattern[row].length; col++) {
+      const ch = pattern[row][col];
+      if (ch === 'X' || ch === 'I') {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        seatContainer.appendChild(empty);
+        continue;
+      }
+      if (ch === 'T') {
+        if (!deskVisible) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          seatContainer.appendChild(empty);
+          continue;
+        }
+        if (col > 0 && pattern[row][col - 1] === 'T') continue;
+        const desk = document.createElement('div');
+        desk.classList.add('desk');
+        desk.textContent = '교탁';
+        seatContainer.appendChild(desk);
+        continue;
+      }
+
+      const seat = document.createElement('div');
+      seat.classList.add('seat');
+      if (ch === 'Q') seat.classList.add('female');
+      else if (ch === 'O') seat.classList.add('male');
+
+      const occupant = currentSeatAssignment ? currentSeatAssignment[row][col] : null;
+      seat.textContent = occupant ? occupant.name : '';
+
+      if (occupant) {
+        seat.draggable = true;
+        seat.dataset.row = row;
+        seat.dataset.col = col;
+        seat.dataset.gender = occupant.gender;
+        
+        seat.addEventListener('dragstart', handleDragStart);
+        seat.addEventListener('dragover', handleDragOver);
+        seat.addEventListener('drop', handleDrop);
+        seat.addEventListener('dragend', handleDragEnd);
+        
+        seat.style.cursor = 'grab';
+      }
+
+      seatContainer.appendChild(seat);
+    }
+  }
+}
+
+function assignSeats() {
+  const maleSeats = [], femaleSeats = [];
+  for (let row = 0; row < pattern.length; row++) {
+    for (let col = 0; col < pattern[row].length; col++) {
+      const ch = pattern[row][col];
+      if (ch === 'O') maleSeats.push({row, col});
+      else if (ch === 'Q') femaleSeats.push({row, col});
+    }
+  }
+
+  const males = entries.filter(e => e.gender === 'male');
+  const females = entries.filter(e => e.gender === 'female');
+  const shuffle = arr => arr.sort(() => Math.random() - 0.5);
+  const shuffledMales = shuffle([...males]);
+  const shuffledFemales = shuffle([...females]);
+
+  const seatMap = Array(pattern.length).fill(null).map(() => Array(pattern[0].length).fill(null));
+  for (let i = 0; i < maleSeats.length; i++) {
+    if (i < shuffledMales.length)
+      seatMap[maleSeats[i].row][maleSeats[i].col] = shuffledMales[i];
+  }
+  for (let i = 0; i < femaleSeats.length; i++) {
+    if (i < shuffledFemales.length)
+      seatMap[femaleSeats[i].row][femaleSeats[i].col] = shuffledFemales[i];
+  }
+
+  currentSeatAssignment = seatMap;
+  renderSeatsWithAssignment();
+}
+
+// 드래그 앤 드롭 이벤트 핸들러들
+function handleDragStart(e) {
+  draggedSeat = {
+    row: parseInt(e.target.dataset.row),
+    col: parseInt(e.target.dataset.col),
+    gender: e.target.dataset.gender,
+    element: e.target
+  };
+  e.target.classList.add('dragging');
+  e.target.style.cursor = 'grabbing';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  const targetGender = e.target.dataset.gender;
+  
+  if (draggedSeat && targetGender && draggedSeat.gender === targetGender) {
+    e.target.classList.add('drag-over');
+  }
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  
+  if (!draggedSeat || !e.target.dataset.gender) return;
+  
+  const targetRow = parseInt(e.target.dataset.row);
+  const targetCol = parseInt(e.target.dataset.col);
+  const targetGender = e.target.dataset.gender;
+  
+  if (draggedSeat.gender === targetGender) {
+    const temp = currentSeatAssignment[draggedSeat.row][draggedSeat.col];
+    currentSeatAssignment[draggedSeat.row][draggedSeat.col] = currentSeatAssignment[targetRow][targetCol];
+    currentSeatAssignment[targetRow][targetCol] = temp;
+    
+    renderSeatsWithAssignment();
+  }
+  
+  cleanupDragState();
+}
+
+function handleDragEnd(e) {
+  cleanupDragState();
+}
+
+function cleanupDragState() {
+  if (draggedSeat) {
+    draggedSeat.element.classList.remove('dragging');
+    draggedSeat.element.style.cursor = 'grab';
+  }
+  
+  document.querySelectorAll('.drag-over').forEach(seat => {
+    seat.classList.remove('drag-over');
+  });
+  
+  draggedSeat = null;
+}
+
+// 이미지 저장을 위한 임시 컨테이너 생성 함수
+function createTempContainer() {
+  const tempContainer = document.createElement('div');
+  tempContainer.id = 'temp-container';
+  
+  // 쌤 뷰가 활성화되어 있으면 임시 컨테이너도 회전
+  if (teacherView) {
+    tempContainer.style.transform = 'rotate(180deg)';
+  }
+  
+  // 현재 좌석 배치를 복사
+  for (let row = 0; row < pattern.length; row++) {
+    for (let col = 0; col < pattern[row].length; col++) {
+      const ch = pattern[row][col];
+      if (ch === 'X' || ch === 'I') {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.style.width = '60px';
+        empty.style.height = '60px';
+        tempContainer.appendChild(empty);
+        continue;
+      }
+      if (ch === 'T') {
+        if (!deskVisible) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.style.width = '60px';
+          empty.style.height = '60px';
+          tempContainer.appendChild(empty);
+          continue;
+        }
+        if (col > 0 && pattern[row][col - 1] === 'T') continue;
+        const desk = document.createElement('div');
+        desk.style.cssText = `
+          grid-column: span 2;
+          height: 60px;
+          border-radius: 16px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 14px;
+          background: linear-gradient(135deg, #6a11cb, #2575fc);
+          box-shadow: 0 8px 16px rgba(37, 117, 252, 0.3);
+          ${teacherView ? 'transform: rotate(180deg);' : ''}
+        `;
+        desk.textContent = '교탁';
+        tempContainer.appendChild(desk);
+        continue;
+      }
+
+      const seat = document.createElement('div');
+      seat.style.cssText = `
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 600;
+        font-size: 11px;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        line-height: 1.1;
+        ${teacherView ? 'transform: rotate(180deg);' : ''}
+      `;
+      
+      if (ch === 'Q') {
+        seat.style.background = 'linear-gradient(135deg, #f093fb, #f5576c)';
+        seat.style.boxShadow = '0 8px 16px rgba(240, 147, 251, 0.3)';
+      } else if (ch === 'O') {
+        seat.style.background = 'linear-gradient(135deg, #667eea, #4facfe)';
+        seat.style.boxShadow = '0 8px 16px rgba(102, 126, 234, 0.3)';
+      }
+
+      const occupant = currentSeatAssignment ? currentSeatAssignment[row][col] : null;
+      seat.textContent = occupant ? occupant.name : '';
+
+      tempContainer.appendChild(seat);
+    }
+  }
+  
+  document.body.appendChild(tempContainer);
+  return tempContainer;
+}
+
+const uploadButton = document.getElementById('upload-button');
+uploadButton.onclick = () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        currentSeatAssignment = JSON.parse(ev.target.result);
+        renderSeatsWithAssignment();
+      } catch {
+        alert("JSON 파일 형식이 올바르지 않습니다.");
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+};
+
+startButton.onclick = () => assignSeats();
+resetButton.onclick = () => renderEmptySeats();
+
+photoButton.onclick = () => {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>저장 방식 선택</h2>
+    <button id="save-png">PNG 이미지 저장</button>
+    <button id="save-json">JSON 저장</button>
+    <button id="close-save">닫기</button>
+  `;
+
+  box.querySelector('#save-png').onclick = () => {
+    if (!currentSeatAssignment) {
+      alert("자리 배치가 없습니다. 먼저 좌석을 배치해주세요.");
+      document.body.removeChild(modal);
+      return;
+    }
+
+    // 임시 컨테이너 생성
+    const tempContainer = createTempContainer();
+    
+    // html2canvas로 캡처
+    html2canvas(tempContainer, {
+      backgroundColor: 'white',
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      foreignObjectRendering: false,
+      logging: false,
+      width: tempContainer.scrollWidth,
+      height: tempContainer.scrollHeight
+    }).then(canvas => {
+      // 임시 컨테이너 제거
+      document.body.removeChild(tempContainer);
+      
+      // 다운로드 링크 생성
+      const link = document.createElement('a');
+      link.download = `seat_arrangement_${new Date().toISOString().slice(0,10)}.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      document.body.removeChild(modal);
+    }).catch(error => {
+      // 오류 시 임시 컨테이너 정리
+      if (document.body.contains(tempContainer)) {
+        document.body.removeChild(tempContainer);
+      }
+      console.error('이미지 저장 오류:', error);
+      alert('이미지 저장 중 오류가 발생했습니다. 브라우저를 새로고침 후 다시 시도해주세요.');
+      document.body.removeChild(modal);
+    });
+  };
+
+  box.querySelector('#save-json').onclick = () => {
+    if (!currentSeatAssignment) {
+      alert("자리 배치가 없습니다.");
+      document.body.removeChild(modal);
+      return;
+    }
+    const blob = new Blob([JSON.stringify(currentSeatAssignment, null, 2)], {type: "application/json"});
+    const link = document.createElement('a');
+    link.download = `seat_arrangement_${new Date().toISOString().slice(0,10)}.json`;
+    link.href = URL.createObjectURL(blob);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href); // 메모리 정리
+    document.body.removeChild(modal);
+  };
+
+  box.querySelector('#close-save').onclick = () => document.body.removeChild(modal);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+};
+
+settingsButton.onclick = () => {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>설정</h2>
+    <label><input type="checkbox" id="desk-toggle" ${deskVisible ? 'checked' : ''}> 교탁 표시</label>
+    <label><input type="checkbox" id="teacher-view-toggle" ${teacherView ? 'checked' : ''}> 쌤 뷰 (180도 회전)</label>
+    <button id="close-settings">닫기</button>
+  `;
+
+  const deskToggle = box.querySelector('#desk-toggle');
+  const teacherViewToggle = box.querySelector('#teacher-view-toggle');
+
+  deskToggle.onchange = () => {
+    deskVisible = deskToggle.checked;
+    if (currentSeatAssignment) {
+      renderSeatsWithAssignment();
+    } else {
+      renderEmptySeats();
+    }
+  };
+
+  teacherViewToggle.onchange = () => {
+    teacherView = teacherViewToggle.checked;
+    if (teacherView) {
+      wrapper.classList.add('teacher-view');
+    } else {
+      wrapper.classList.remove('teacher-view');
+    }
+  };
+
+  box.querySelector('#close-settings').onclick = () => document.body.removeChild(modal);
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+};
+
+infoButton.onclick = () => {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>자리 배치 시스템 v2.7.1</h2>
+    <p><strong>제작자:</strong> 이은성</p>
+    <p>본 시스템은 성별 구분에 따른 고정된 자리 패턴에 기반하여, 사용자가 입력한 이름을 자동으로 배치합니다.</p>
+    <p><strong>주요 기능:</strong></p>
+    <p>• 같은 성별끼리 드래그해서 자리 바꾸기 가능</p>
+    <p>• 쌤 뷰: 선생님 시점에서 보기 위한 180도 회전 모드</p>
+    <p>• 고화질 PNG 및 JSON 파일로 저장/불러오기</p>
+    <p><strong>업데이트:</strong> 이미지 저장 기능 개선, 안정성 향상</p>
+    <p><strong>주의:</strong> 비상업적 개인 사용에만 허용되며, 무단 복제 및 재배포는 금지됩니다.</p>
+    <button id="close-info">닫기</button>
+  `;
+
+  box.querySelector('#close-info').onclick = () => document.body.removeChild(modal);
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+};
+
+renderEmptySeats();
+</script>
+</body>
+</html>
