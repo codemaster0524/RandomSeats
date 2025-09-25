@@ -4,11 +4,7 @@
   <meta charset="UTF-8" />
   <title>RandomSeats</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<!-- 라이트 모드 기본 파비콘 -->
-<link rel="icon" href="https://codemaster0524.github.io/RandomSeats/favicon.svg" type="image/svg+xml">
-
-<!-- 다크 모드 파비콘 -->
-<link rel="icon" href="https://codemaster0524.github.io/RandomSeats/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">  <style>
+<style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
     * {
@@ -422,6 +418,32 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
+
+// 파비콘 동적 생성 및 캐시 방지
+function createFavicons() {
+  const timestamp = Date.now();
+  
+  // 라이트 모드 파비콘
+  const lightFavicon = document.createElement('link');
+  lightFavicon.rel = 'icon';
+  lightFavicon.type = 'image/svg+xml';
+  lightFavicon.href = `https://codemaster0524.github.io/RandomSeats/favicon.svg?v=${timestamp}`;
+  
+  // 다크 모드 파비콘  
+  const darkFavicon = document.createElement('link');
+  darkFavicon.rel = 'icon';
+  darkFavicon.type = 'image/svg+xml';
+  darkFavicon.media = '(prefers-color-scheme: dark)';
+  darkFavicon.href = `https://codemaster0524.github.io/RandomSeats/favicon-dark.svg?v=${timestamp}`;
+  
+  // head에 추가
+  document.head.appendChild(lightFavicon);
+  document.head.appendChild(darkFavicon);
+}
+
+// 페이지 로드시 실행
+createFavicons();
+
 let deskVisible = true;
 let teacherView = false;
 let currentSeatAssignment = null;
