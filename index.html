@@ -404,13 +404,14 @@
 <body>
 <div id="wrapper">
   <div id="dynamic-island">
-    <div class="button" id="start-button" title="실행"><i class="fa-solid fa-play"></i></div>
-    <div class="button" id="reset-button" title="초기화"><i class="fa-solid fa-rotate-left"></i></div>
-    <div class="button" id="photo-button" title="저장"><i class="fa-solid fa-save"></i></div>
-    <div class="button" id="upload-button" title="JSON 불러오기"><i class="fa-solid fa-file-upload"></i></div>
-    <div class="button" id="settings-button" title="설정"><i class="fa-solid fa-gear"></i></div>
-    <div class="button" id="bug-button" title="버그 신고" onclick="location.href='mailto:eunsung_lee@hotmail.com'"><i class="fa-solid fa-bug"></i></div>
-    <div class="button" id="info-button" title="정보"><i class="fa-solid fa-circle-info"></i></div>
+<div class="button" id="start-button" title="Shuffle"><i class="fa-solid fa-play"></i></div>
+<div class="button" id="reset-button" title="Clear"><i class="fa-solid fa-rotate-left"></i></div>
+<div class="button" id="photo-button" title="Export"><i class="fa-solid fa-save"></i></div>
+<div class="button" id="upload-button" title="Import JSON"><i class="fa-solid fa-file-upload"></i></div>
+<div class="button" id="settings-button" title="Settings"><i class="fa-solid fa-gear"></i></div>
+<div class="button" id="bug-button" title="Feedback" onclick="location.href='mailto:eunsung_lee@hotmail.com'"><i class="fa-solid fa-bug"></i></div>
+<div class="button" id="info-button" title="About"><i class="fa-solid fa-circle-info"></i></div>
+
   </div>
 
   <div id="seat-container"></div>
@@ -419,27 +420,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 
-// 파비콘 동적 생성 및 캐시 방지
 function createFavicons() {
   const timestamp = Date.now();
-  
-  // 라이트 모드 파비콘
+
   const lightFavicon = document.createElement('link');
   lightFavicon.rel = 'icon';
   lightFavicon.type = 'image/svg+xml';
+  lightFavicon.media = '(prefers-color-scheme: light)';
   lightFavicon.href = `https://codemaster0524.github.io/RandomSeats/favicon.svg?v=${timestamp}`;
-  
-  // 다크 모드 파비콘  
+
   const darkFavicon = document.createElement('link');
   darkFavicon.rel = 'icon';
   darkFavicon.type = 'image/svg+xml';
   darkFavicon.media = '(prefers-color-scheme: dark)';
   darkFavicon.href = `https://codemaster0524.github.io/RandomSeats/favicon-dark.svg?v=${timestamp}`;
-  
-  // head에 추가
+
   document.head.appendChild(lightFavicon);
   document.head.appendChild(darkFavicon);
 }
+createFavicons();
 
 // 페이지 로드시 실행
 createFavicons();
@@ -779,11 +778,11 @@ photoButton.onclick = () => {
 
   const box = document.createElement('div');
   box.className = 'modal-box';
-  box.innerHTML = `
-    <h2>저장 방식 선택</h2>
-    <button id="save-png">PNG 이미지 저장</button>
-    <button id="save-json">JSON 저장</button>
-    <button id="close-save">닫기</button>
+box.innerHTML = `
+  <h2>Export Options</h2>
+  <button id="save-png">Export as PNG</button>
+  <button id="save-json">Export as JSON</button>
+  <button id="close-save">Cancel</button>
   `;
 
   box.querySelector('#save-png').onclick = () => {
@@ -857,12 +856,13 @@ settingsButton.onclick = () => {
 
   const box = document.createElement('div');
   box.className = 'modal-box';
-  box.innerHTML = `
-    <h2>설정</h2>
-    <label><input type="checkbox" id="desk-toggle" ${deskVisible ? 'checked' : ''}> 교탁 표시</label>
-    <label><input type="checkbox" id="teacher-view-toggle" ${teacherView ? 'checked' : ''}> 쌤 뷰 (180도 회전)</label>
-    <button id="close-settings">닫기</button>
-  `;
+box.innerHTML = `
+  <h2>Settings</h2>
+  <label><input type="checkbox" id="desk-toggle" ${deskVisible ? 'checked' : ''}> Show Teacher Desk</label>
+  <label><input type="checkbox" id="teacher-view-toggle" ${teacherView ? 'checked' : ''}> Teacher View (Rotate 180°)</label>
+  <button id="close-settings">Close</button>
+`;
+
 
   const deskToggle = box.querySelector('#desk-toggle');
   const teacherViewToggle = box.querySelector('#teacher-view-toggle');
@@ -897,21 +897,24 @@ infoButton.onclick = () => {
 
   const box = document.createElement('div');
   box.className = 'modal-box';
-  box.innerHTML = `
-    <h2>자리 배치 시스템 v2.7.1</h2>
-    <p><strong>제작자:</strong> 이은성</p>
-    <p>스마트 교실 관리를 위한 직관적인 좌석 배치 도구입니다.</p>
-    <p><strong>주요 기능:</strong></p>
-    <p>• 성별 기반 자동 랜덤 배치</p>
-    <p>• 드래그 앤 드롭으로 간편한 자리 변경</p>
-    <p>• 쌤 뷰: 선생님 시점 180도 회전 모드</p>
-    <p>• 고화질 PNG 및 JSON 파일 저장/불러오기</p>
-    <p>• 모바일 친화적 반응형 디자인</p>
-    <p><strong>업데이트:</strong> 쌤 뷰 이미지 저장 지원, UI/UX 개선</p>
-    <p><strong>라이센스:</strong> CC BY-NC-ND 4.0</p>
-    <p>교육 목적 및 비상업적 용도로 자유롭게 사용 가능합니다. 상업적 사용이나 특별한 용도가 필요하신 경우 제작자에게 문의해 주세요.</p>
-    <button id="close-info">닫기</button>
-  `;
+box.innerHTML = `
+  <h2>Seat Arrangement System v2.8.1</h2>
+  <p><strong>Created by:</strong> Eunsung Lee</p>
+  <p>A smart and intuitive tool for managing classroom seating arrangements.</p>
+  <p><strong>Key Features:</strong></p>
+  <ul>
+    <li>Automatic random assignment by gender</li>
+    <li>Simple drag & drop seat swapping</li>
+    <li>Teacher View (180° rotation for instructor’s perspective)</li>
+    <li>Export and Import as high-resolution PNG or JSON</li>
+    <li>Responsive design for desktop and mobile</li>
+  </ul>
+  <p><strong>Latest Update:</strong> Teacher View export support, improved UI/UX</p>
+  <p><strong>License:</strong> CC BY-NC-ND 4.0</p>
+  <p>Free for educational and non-commercial use. For commercial use, please contact the author.</p>
+  <button id="close-info">Close</button>
+`;
+
 
   box.querySelector('#close-info').onclick = () => document.body.removeChild(modal);
 
