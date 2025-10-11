@@ -1078,6 +1078,9 @@ crownButton.onclick = () => {
   const keyError = box.querySelector('#pro-key-error');
   
   activateButton.onclick = async () => {
+  e.preventDefault(); // 🚀 form의 기본 동작(새로고침 + GET요청) 막기
+
+    
     const key = proKeyInput.value.trim();
     
     if (!key) {
