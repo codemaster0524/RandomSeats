@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>RandomSeats</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
@@ -122,19 +123,32 @@
     }
     
     #seat-container {
-      display: grid;
-      grid-template-columns: repeat(8, 60px);
-      gap: 16px;
-      padding: 32px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      animation: fadeInUp 0.8s ease-out;
-    }
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    gap: 16px;
+    padding: 32px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    animation: fadeInUp 0.8s ease-out;
+      position: relative;
+      }
+      
+      /* 저작권 표시 */
+      #seat-container::after {
+        content: '© 2025 Eunsung Lee';
+        position: absolute;
+        bottom: 8px;
+        right: 12px;
+        font-size: 11px;
+        color: #999;
+        font-family: 'Inter', Arial, sans-serif;
+        pointer-events: none;
+      }
     
     .seat {
       width: 60px;
@@ -374,21 +388,30 @@
       }
     }
     
-    /* 광고 박스 스타일 */
-    .ad-box {
-      margin-top: 20px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.95);
+    /* 광고 하단 바 스타일 */
+    .ad-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(20px);
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+      padding: 10px 0;
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 9999;
     }
     
-    .ad-box.hidden {
+    .ad-bar.hidden {
       display: none;
+    }
+    
+    /* 하단 광고바 공간 확보 */
+    body {
+      padding-bottom: 110px;
     }
     
     .modal-box input[type="text"] {
@@ -404,6 +427,23 @@
     .modal-box input[type="text"]:focus {
       outline: none;
       border-color: #667eea;
+    }
+    
+    .captcha-container {
+      margin: 16px 0;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .error-message {
+      color: #e53e3e;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
     }
     
     /* 반응형 디자인 */
@@ -448,13 +488,15 @@
 
   <div id="seat-container"></div>
   
-  <div class="ad-box">
-    <ins class="kakao_ad_area"
-      style="display:none;"
-      data-ad-unit="DAN-Q8IGdpuqYxNw4U9w"
-      data-ad-width="320"
-      data-ad-height="100"></ins>
-  </div>
+</div>
+
+<!-- 카카오 광고 하단 바 -->
+<div class="ad-bar">
+  <ins class="kakao_ad_area"
+    style="display:none;"
+    data-ad-unit="DAN-Q8IGdpuqYxNw4U9w"
+    data-ad-width="728"
+    data-ad-height="90"></ins>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -488,26 +530,17 @@ let teacherView = false;
 let currentSeatAssignment = null;
 let draggedSeat = null;
 let adRemoved = false;
+let turnstileWidgetId = null;
 
-// 쿠키 함수들
-function setCookie(name, value, days) {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
-}
+// Cloudflare Workers API URL
+const WORKER_API_URL = 'https://ad-keys.eunsung-lee-460.workers.dev/';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAB6AJ6Melx1ZJUyZ'; // Turnstile 사이트 키
 
-function getCookie(name) {
-  const value = "; " + document.cookie;
-  const parts = value.split("; " + name + "=");
-  if (parts.length === 2) return parts.pop().split(";").shift();
-  return null;
-}
-
-// 페이지 로드시 광고 제거 상태 확인
-if (getCookie('adRemoved') === 'true') {
+// 페이지 로드시 광고 제거 상태 확인 (localStorage 사용)
+if (localStorage.getItem('adRemoved') === 'true') {
   adRemoved = true;
-  const adBox = document.querySelector('.ad-box');
-  if (adBox) adBox.classList.add('hidden');
+  const adBar = document.querySelector('.ad-bar');
+  if (adBar) adBar.classList.add('hidden');
 }
 
 const pattern = [
@@ -868,6 +901,12 @@ box.innerHTML = `
       width: tempContainer.scrollWidth,
       height: tempContainer.scrollHeight
     }).then(canvas => {
+      // 저작권 표시 추가
+      const ctx = canvas.getContext('2d');
+      ctx.font = '14px Inter, Arial';
+      ctx.fillStyle = '#999';
+      ctx.textAlign = 'right';
+      ctx.fillText('© 2025 Eunsung Lee', canvas.width - 20, canvas.height - 15);
       // 임시 컨테이너 제거
       document.body.removeChild(tempContainer);
       
@@ -923,9 +962,14 @@ box.innerHTML = `
   <label><input type="checkbox" id="desk-toggle" ${deskVisible ? 'checked' : ''}> Show Teacher Desk</label>
   <label><input type="checkbox" id="teacher-view-toggle" ${teacherView ? 'checked' : ''}> Teacher View (Rotate 180°)</label>
   <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-    <label style="display: block; margin-bottom: 8px;">Remove Ads (Enter Key)</label>
-    <input type="text" id="ad-key-input" placeholder="Enter secret key..." ${adRemoved ? 'disabled' : ''} />
-    <button id="remove-ad-button" style="margin-top: 12px;" ${adRemoved ? 'disabled' : ''}>${adRemoved ? 'Ads Removed ✓' : 'Remove Ads'}</button>
+    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Remove Ads</label>
+    <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">Enter your ad-free key to remove advertisements</p>
+    <input type="text" id="ad-key-input" placeholder="Enter key (e.g., ADK-XXXX-XXXX-XXXX)" ${adRemoved ? 'disabled' : ''} />
+    <div class="error-message" id="key-error"></div>
+    <div class="captcha-container" id="captcha-container" style="${adRemoved ? 'display: none;' : ''}">
+      <div id="turnstile-widget"></div>
+    </div>
+    <button id="remove-ad-button" style="margin-top: 12px;" ${adRemoved ? 'disabled' : ''}>${adRemoved ? 'Ads Removed ✓' : 'Verify & Remove Ads'}</button>
   </div>
   <button id="close-settings">Close</button>
 `;
@@ -935,6 +979,18 @@ box.innerHTML = `
   const teacherViewToggle = box.querySelector('#teacher-view-toggle');
   const adKeyInput = box.querySelector('#ad-key-input');
   const removeAdButton = box.querySelector('#remove-ad-button');
+  const keyError = box.querySelector('#key-error');
+  const captchaContainer = box.querySelector('#captcha-container');
+
+  // Turnstile 위젯 렌더링
+  if (!adRemoved && typeof turnstile !== 'undefined') {
+    setTimeout(() => {
+      turnstileWidgetId = turnstile.render('#turnstile-widget', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: 'light',
+      });
+    }, 100);
+  }
 
   deskToggle.onchange = () => {
     deskVisible = deskToggle.checked;
@@ -954,19 +1010,81 @@ box.innerHTML = `
     }
   };
 
-  removeAdButton.onclick = () => {
+  removeAdButton.onclick = async () => {
     const key = adKeyInput.value.trim();
-    if (key === 'Hello, World!') {
-      adRemoved = true;
-      setCookie('adRemoved', 'true', 365);
-      const adBox = document.querySelector('.ad-box');
-      if (adBox) adBox.classList.add('hidden');
-      removeAdButton.textContent = 'Ads Removed ✓';
-      removeAdButton.disabled = true;
-      adKeyInput.disabled = true;
-      alert('Ads have been removed successfully!');
-    } else {
-      alert('Invalid key. Please try again.');
+    
+    // 입력 검증
+    if (!key) {
+      keyError.textContent = 'Please enter a key';
+      keyError.classList.add('show');
+      return;
+    }
+
+    // Turnstile 토큰 가져오기
+    let captchaToken;
+    try {
+      captchaToken = turnstile.getResponse(turnstileWidgetId);
+      if (!captchaToken) {
+        keyError.textContent = 'Please complete the captcha';
+        keyError.classList.add('show');
+        return;
+      }
+    } catch (e) {
+      keyError.textContent = 'Captcha error. Please refresh the page.';
+      keyError.classList.add('show');
+      return;
+    }
+
+    // 버튼 비활성화
+    removeAdButton.disabled = true;
+    removeAdButton.textContent = 'Verifying...';
+    keyError.classList.remove('show');
+
+    try {
+      // Workers API 호출
+      const response = await fetch(WORKER_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, captchaToken }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // 성공: localStorage에 저장
+        localStorage.setItem('adRemoved', 'true');
+        adRemoved = true;
+        
+        // 광고 숨기기
+        const adBar = document.querySelector('.ad-bar');
+        if (adBar) adBar.classList.add('hidden');
+        
+        // UI 업데이트
+        removeAdButton.textContent = 'Ads Removed ✓';
+        adKeyInput.disabled = true;
+        captchaContainer.style.display = 'none';
+        
+        alert('✅ Ads have been removed successfully!');
+      } else {
+        // 실패
+        keyError.textContent = result.error || 'Verification failed';
+        keyError.classList.add('show');
+        removeAdButton.disabled = false;
+        removeAdButton.textContent = 'Verify & Remove Ads';
+        
+        // Captcha 리셋
+        turnstile.reset(turnstileWidgetId);
+      }
+    } catch (error) {
+      keyError.textContent = 'Network error. Please try again.';
+      keyError.classList.add('show');
+      removeAdButton.disabled = false;
+      removeAdButton.textContent = 'Verify & Remove Ads';
+      
+      // Captcha 리셋
+      if (turnstileWidgetId) {
+        turnstile.reset(turnstileWidgetId);
+      }
     }
   };
 
