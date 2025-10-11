@@ -1079,7 +1079,7 @@ crownButton.onclick = () => {
   const activateButton = box.querySelector('#activate-pro-button');
   const keyError = box.querySelector('#pro-key-error');
   
-  activateButton.onclick = async () => {
+activateButton.onclick = async (e) => {
   e.preventDefault(); // 🚀 form의 기본 동작(새로고침 + GET요청) 막기
 
     
