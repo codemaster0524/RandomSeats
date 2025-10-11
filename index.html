@@ -374,6 +374,38 @@
       }
     }
     
+    /* 광고 박스 스타일 */
+    .ad-box {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .ad-box.hidden {
+      display: none;
+    }
+    
+    .modal-box input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 8px;
+      transition: border-color 0.3s;
+    }
+    
+    .modal-box input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
     /* 반응형 디자인 */
     @media (max-width: 768px) {
       #seat-container {
@@ -415,6 +447,14 @@
   </div>
 
   <div id="seat-container"></div>
+  
+  <div class="ad-box">
+    <ins class="kakao_ad_area"
+      style="display:none;"
+      data-ad-unit="DAN-Q8IGdpuqYxNw4U9w"
+      data-ad-width="320"
+      data-ad-height="100"></ins>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -447,6 +487,28 @@ let deskVisible = true;
 let teacherView = false;
 let currentSeatAssignment = null;
 let draggedSeat = null;
+let adRemoved = false;
+
+// 쿠키 함수들
+function setCookie(name, value, days) {
+  const date = new Date();
+  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+  document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
+}
+
+function getCookie(name) {
+  const value = "; " + document.cookie;
+  const parts = value.split("; " + name + "=");
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
+}
+
+// 페이지 로드시 광고 제거 상태 확인
+if (getCookie('adRemoved') === 'true') {
+  adRemoved = true;
+  const adBox = document.querySelector('.ad-box');
+  if (adBox) adBox.classList.add('hidden');
+}
 
 const pattern = [
   'XXITTIXX',
@@ -860,12 +922,19 @@ box.innerHTML = `
   <h2>Settings</h2>
   <label><input type="checkbox" id="desk-toggle" ${deskVisible ? 'checked' : ''}> Show Teacher Desk</label>
   <label><input type="checkbox" id="teacher-view-toggle" ${teacherView ? 'checked' : ''}> Teacher View (Rotate 180°)</label>
+  <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+    <label style="display: block; margin-bottom: 8px;">Remove Ads (Enter Key)</label>
+    <input type="text" id="ad-key-input" placeholder="Enter secret key..." ${adRemoved ? 'disabled' : ''} />
+    <button id="remove-ad-button" style="margin-top: 12px;" ${adRemoved ? 'disabled' : ''}>${adRemoved ? 'Ads Removed ✓' : 'Remove Ads'}</button>
+  </div>
   <button id="close-settings">Close</button>
 `;
 
 
   const deskToggle = box.querySelector('#desk-toggle');
   const teacherViewToggle = box.querySelector('#teacher-view-toggle');
+  const adKeyInput = box.querySelector('#ad-key-input');
+  const removeAdButton = box.querySelector('#remove-ad-button');
 
   deskToggle.onchange = () => {
     deskVisible = deskToggle.checked;
@@ -882,6 +951,22 @@ box.innerHTML = `
       wrapper.classList.add('teacher-view');
     } else {
       wrapper.classList.remove('teacher-view');
+    }
+  };
+
+  removeAdButton.onclick = () => {
+    const key = adKeyInput.value.trim();
+    if (key === 'Hello, World!') {
+      adRemoved = true;
+      setCookie('adRemoved', 'true', 365);
+      const adBox = document.querySelector('.ad-box');
+      if (adBox) adBox.classList.add('hidden');
+      removeAdButton.textContent = 'Ads Removed ✓';
+      removeAdButton.disabled = true;
+      adKeyInput.disabled = true;
+      alert('Ads have been removed successfully!');
+    } else {
+      alert('Invalid key. Please try again.');
     }
   };
 
@@ -924,5 +1009,9 @@ box.innerHTML = `
 
 renderEmptySeats();
 </script>
+
+<!-- 카카오 광고 스크립트 -->
+<script async type="text/javascript"
+  src="https://t1.daumcdn.net/kas/static/ba.min.js"></script>
 </body>
 </html>
