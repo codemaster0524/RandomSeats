@@ -122,6 +122,26 @@
       transform: translateY(0);
     }
     
+    /* 왕관 버튼 (PRO) */
+    .button.crown {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: 2px solid #fbbf24;
+    }
+    
+    .button.crown.pro {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+    }
+    
+    .button.crown:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+    
+    .button.crown.pro:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
     #seat-container {
     display: grid;
     grid-template-columns: repeat(8, 60px);
@@ -294,9 +314,11 @@
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
       max-width: 400px;
+      max-height: 80vh;
       width: 90%;
       text-align: left;
       animation: scaleIn 0.3s ease-out;
+      overflow-y: auto;
     }
     
     .modal-box h2 {
@@ -388,25 +410,106 @@
       }
     }
     
-    /* 광고 하단 바 스타일 */
-    .ad-bar {
+    /* 프로모션 하단 바 스타일 */
+    .promo-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-      padding: 10px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+      padding: 16px 0;
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 9999;
+      min-height: 70px;
+      overflow: hidden;
+      transition: background 0.5s ease;
     }
     
-    .ad-bar.hidden {
+    .promo-bar.hidden {
       display: none;
+    }
+    
+    .promo-slide {
+      display: none;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 40px;
+      animation: fadeIn 0.5s ease-in-out;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .promo-slide::before,
+    .promo-slide::after {
+      position: absolute;
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .promo-emoji {
+      position: absolute;
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    /* GitHub Star - 노란색 */
+    .promo-slide:nth-child(1) {
+      background: #fbbf24;
+    }
+    
+    /* RandomPicker - 파란색 */
+    .promo-slide:nth-child(2) {
+      background: #3b82f6;
+    }
+    
+    /* Coffee - 갈색 */
+    .promo-slide:nth-child(3) {
+      background: #92400e;
+    }
+    
+    /* Feedback - 핑크색 */
+    .promo-slide:nth-child(4) {
+      background: #ec4899;
+    }
+    
+    /* Follow - 보라색 */
+    .promo-slide:nth-child(5) {
+      background: #8b5cf6;
+    }
+    
+    .promo-slide.active {
+      display: flex;
+    }
+    
+    .promo-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      height: 100%;
+      padding: 0 40px;
+      background: transparent;
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 22px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      z-index: 1;
+      position: relative;
+    }
+    
+
+    
+    .promo-icon {
+      font-size: 48px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
     }
     
     /* 하단 광고바 공간 확보 */
@@ -476,6 +579,7 @@
 <body>
 <div id="wrapper">
   <div id="dynamic-island">
+<div class="button crown" id="crown-button" title="Upgrade to PRO"><i class="fa-solid fa-crown"></i></div>
 <div class="button" id="start-button" title="Shuffle"><i class="fa-solid fa-play"></i></div>
 <div class="button" id="reset-button" title="Clear"><i class="fa-solid fa-rotate-left"></i></div>
 <div class="button" id="photo-button" title="Export"><i class="fa-solid fa-save"></i></div>
@@ -490,13 +594,58 @@
   
 </div>
 
-<!-- 카카오 광고 하단 바 -->
-<div class="ad-bar">
-  <ins class="kakao_ad_area"
-    style="display:none;"
-    data-ad-unit="DAN-Q8IGdpuqYxNw4U9w"
-    data-ad-width="728"
-    data-ad-height="90"></ins>
+<!-- Promotion Bar -->
+<div class="promo-bar">
+  <div class="promo-slide active" data-emoji="⭐">
+    <span class="promo-emoji" style="font-size: 100px; left: 5%; top: -30px; transform: rotate(-15deg);">⭐</span>
+    <span class="promo-emoji" style="font-size: 70px; right: 15%; top: -10px; transform: rotate(20deg);">⭐</span>
+    <span class="promo-emoji" style="font-size: 50px; left: 30%; top: -5px; transform: rotate(-25deg);">⭐</span>
+    <span class="promo-emoji" style="font-size: 60px; right: 35%; top: -18px; transform: rotate(15deg);">⭐</span>
+    <a href="https://github.com/codemaster0524/RandomSeats" target="_blank" class="promo-content">
+      <span class="promo-icon">⭐</span>
+      <span>Star this project on GitHub</span>
+    </a>
+  </div>
+  <div class="promo-slide" data-emoji="🎲">
+    <span class="promo-emoji" style="font-size: 90px; left: 10%; top: -25px; transform: rotate(10deg);">🎲</span>
+    <span class="promo-emoji" style="font-size: 65px; right: 8%; top: -20px; transform: rotate(-10deg);">🎲</span>
+    <span class="promo-emoji" style="font-size: 55px; left: 35%; top: -8px; transform: rotate(25deg);">🎲</span>
+    <span class="promo-emoji" style="font-size: 75px; right: 30%; top: -15px; transform: rotate(-20deg);">🎲</span>
+    <a href="https://codemaster0524.github.io/RandomPicker" target="_blank" class="promo-content">
+      <span class="promo-icon">🎲</span>
+      <span>Try RandomPicker</span>
+    </a>
+  </div>
+  <div class="promo-slide" data-emoji="☕">
+    <span class="promo-emoji" style="font-size: 95px; left: 7%; top: -28px; transform: rotate(-12deg);">☕</span>
+    <span class="promo-emoji" style="font-size: 75px; right: 10%; top: -12px; transform: rotate(-15deg);">☕</span>
+    <span class="promo-emoji" style="font-size: 58px; left: 32%; top: -10px; transform: rotate(18deg);">☕</span>
+    <span class="promo-emoji" style="font-size: 68px; right: 33%; top: -20px; transform: rotate(-8deg);">☕</span>
+    <div class="promo-content" onclick="showCoffeeModal()">
+      <span class="promo-icon">☕</span>
+      <span>Buy me a coffee</span>
+    </div>
+  </div>
+  <div class="promo-slide" data-emoji="💌">
+    <span class="promo-emoji" style="font-size: 85px; left: 12%; top: -22px; transform: rotate(12deg);">💌</span>
+    <span class="promo-emoji" style="font-size: 68px; right: 18%; top: -18px; transform: rotate(-18deg);">💌</span>
+    <span class="promo-emoji" style="font-size: 52px; left: 28%; top: -6px; transform: rotate(-22deg);">💌</span>
+    <span class="promo-emoji" style="font-size: 72px; right: 28%; top: -14px; transform: rotate(8deg);">💌</span>
+    <div class="promo-content" onclick="showFeedbackModal()">
+      <span class="promo-icon">💌</span>
+      <span>Leave feedback & rating</span>
+    </div>
+  </div>
+  <div class="promo-slide" data-emoji="👤">
+    <span class="promo-emoji" style="font-size: 92px; left: 6%; top: -26px; transform: rotate(-20deg);">👤</span>
+    <span class="promo-emoji" style="font-size: 72px; right: 14%; top: -14px; transform: rotate(15deg);">👤</span>
+    <span class="promo-emoji" style="font-size: 56px; left: 30%; top: -12px; transform: rotate(20deg);">👤</span>
+    <span class="promo-emoji" style="font-size: 66px; right: 32%; top: -22px; transform: rotate(-12deg);">👤</span>
+    <a href="https://github.com/codemaster0524" target="_blank" class="promo-content">
+      <span class="promo-icon">👤</span>
+      <span>Follow me on GitHub</span>
+    </a>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -529,19 +678,53 @@ let deskVisible = true;
 let teacherView = false;
 let currentSeatAssignment = null;
 let draggedSeat = null;
-let adRemoved = false;
+let isPro = false;
 let turnstileWidgetId = null;
 
 // Cloudflare Workers API URL
 const WORKER_API_URL = 'https://ad-keys.eunsung-lee-460.workers.dev/';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAB6AJ6Melx1ZJUyZ'; // Turnstile 사이트 키
 
-// 페이지 로드시 광고 제거 상태 확인 (localStorage 사용)
-if (localStorage.getItem('adRemoved') === 'true') {
-  adRemoved = true;
-  const adBar = document.querySelector('.ad-bar');
-  if (adBar) adBar.classList.add('hidden');
+// 페이지 로드시 PRO 상태 확인 (localStorage 사용)
+if (localStorage.getItem('isPro') === 'true') {
+  isPro = true;
+  const promoBar = document.querySelector('.promo-bar');
+  if (promoBar) promoBar.classList.add('hidden');
+  const crownButton = document.getElementById('crown-button');
+  if (crownButton) crownButton.classList.add('pro');
 }
+
+// 프로모션 슬라이드 자동 전환 (5초마다)
+let currentSlide = 0;
+const slides = document.querySelectorAll('.promo-slide');
+const promoBar = document.querySelector('.promo-bar');
+
+function showSlide(index) {
+  slides.forEach((slide, i) => {
+    slide.classList.remove('active');
+    if (i === index) {
+      slide.classList.add('active');
+      // 프로모션 바 배경색 변경
+      const bgColor = window.getComputedStyle(slide).backgroundColor;
+      promoBar.style.background = bgColor;
+    }
+  });
+}
+
+// 초기 배경색 설정
+if (slides.length > 0 && !isPro) {
+  const initialBgColor = window.getComputedStyle(slides[0]).backgroundColor;
+  promoBar.style.background = initialBgColor;
+}
+
+function nextSlide() {
+  if (!isPro) {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+}
+
+setInterval(nextSlide, 5000);
 
 const pattern = [
   'XXITTIXX',
@@ -842,8 +1025,131 @@ function createTempContainer() {
   return tempContainer;
 }
 
+const crownButton = document.getElementById('crown-button');
 const uploadButton = document.getElementById('upload-button');
+// 왕관 버튼 클릭 (PRO 구매)
+crownButton.onclick = () => {
+  if (isPro) {
+    alert('✨ You are already a PRO user!');
+    return;
+  }
+  
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>🌟 Upgrade to RandomSeats PRO</h2>
+    <p style="margin-bottom: 16px;">Unlock premium features:</p>
+    <ul style="margin: 16px 0; line-height: 1.8;">
+      <li>✅ <strong>JSON Import/Export</strong> - Save and load seating arrangements</li>
+      <li>✅ <strong>Teacher View</strong> - 180° rotation for instructor's perspective</li>
+      <li>✅ <strong>Ad-Free Experience</strong> - Remove all promotional content</li>
+      <li>✅ <strong>Future Updates</strong> - Access to upcoming PRO features</li>
+    </ul>
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 600;">Enter PRO License Key</label>
+      <input type="text" id="pro-key-input" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: monospace;" />
+      <div class="error-message" id="pro-key-error"></div>
+      <div class="captcha-container" id="pro-captcha-container">
+        <div id="pro-turnstile-widget"></div>
+      </div>
+      <button id="activate-pro-button" style="margin-top: 12px;">Activate PRO</button>
+    </div>
+    <button id="close-pro-modal" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  // Turnstile 위젯 렌더링
+  setTimeout(() => {
+    if (typeof turnstile !== 'undefined') {
+      turnstileWidgetId = turnstile.render('#pro-turnstile-widget', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: 'light',
+      });
+    }
+  }, 100);
+  
+  const proKeyInput = box.querySelector('#pro-key-input');
+  const activateButton = box.querySelector('#activate-pro-button');
+  const keyError = box.querySelector('#pro-key-error');
+  
+  activateButton.onclick = async () => {
+    const key = proKeyInput.value.trim();
+    
+    if (!key) {
+      keyError.textContent = 'Please enter a PRO license key';
+      keyError.classList.add('show');
+      return;
+    }
+    
+    let captchaToken;
+    try {
+      captchaToken = turnstile.getResponse(turnstileWidgetId);
+      if (!captchaToken) {
+        keyError.textContent = 'Please complete the captcha';
+        keyError.classList.add('show');
+        return;
+      }
+    } catch (e) {
+      keyError.textContent = 'Captcha error. Please refresh the page.';
+      keyError.classList.add('show');
+      return;
+    }
+    
+    activateButton.disabled = true;
+    activateButton.textContent = 'Verifying...';
+    keyError.classList.remove('show');
+    
+    try {
+      const response = await fetch(WORKER_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, captchaToken }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        localStorage.setItem('isPro', 'true');
+        isPro = true;
+        
+        const promoBar = document.querySelector('.promo-bar');
+        if (promoBar) promoBar.classList.add('hidden');
+        
+        crownButton.classList.add('pro');
+        
+        document.body.removeChild(modal);
+        alert('🎉 Welcome to RandomSeats PRO! All premium features are now unlocked.');
+      } else {
+        keyError.textContent = result.error || 'Invalid PRO key';
+        keyError.classList.add('show');
+        activateButton.disabled = false;
+        activateButton.textContent = 'Activate PRO';
+        turnstile.reset(turnstileWidgetId);
+      }
+    } catch (error) {
+      keyError.textContent = 'Network error. Please try again.';
+      keyError.classList.add('show');
+      activateButton.disabled = false;
+      activateButton.textContent = 'Activate PRO';
+      if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
+    }
+  };
+  
+  box.querySelector('#close-pro-modal').onclick = () => document.body.removeChild(modal);
+};
+
+// JSON 업로드 (PRO 전용)
 uploadButton.onclick = () => {
+  if (!isPro) {
+    alert('🌟 This is a PRO feature. Please upgrade to use JSON Import/Export.');
+    crownButton.click();
+    return;
+  }
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'application/json';
@@ -856,7 +1162,7 @@ uploadButton.onclick = () => {
         currentSeatAssignment = JSON.parse(ev.target.result);
         renderSeatsWithAssignment();
       } catch {
-        alert("JSON 파일 형식이 올바르지 않습니다.");
+        alert("Invalid JSON file format.");
       }
     };
     reader.readAsText(file);
@@ -867,6 +1173,71 @@ uploadButton.onclick = () => {
 startButton.onclick = () => assignSeats();
 resetButton.onclick = () => renderEmptySeats();
 
+// 커피 모달
+function showCoffeeModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>☕ Buy Me a Coffee</h2>
+    <p>Support the developer to create better projects!</p>
+    <p style="margin-top: 16px;">🎁 <strong>QR code coming soon!</strong></p>
+    <button id="close-coffee">Close</button>
+  `;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  box.querySelector('#close-coffee').onclick = () => document.body.removeChild(modal);
+}
+
+// 피드백 모달
+function showFeedbackModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>💌 Feedback & Rating</h2>
+    <p style="margin-bottom: 16px;">How do you like RandomSeats?</p>
+    <div style="text-align: center; margin: 24px 0; font-size: 32px;">
+      <span class="star" data-rating="1">⭐</span>
+      <span class="star" data-rating="2">⭐</span>
+      <span class="star" data-rating="3">⭐</span>
+      <span class="star" data-rating="4">⭐</span>
+      <span class="star" data-rating="5">⭐</span>
+    </div>
+    <textarea id="feedback-text" placeholder="Leave your feedback (optional)" style="width: 100%; min-height: 100px; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; resize: vertical; font-family: inherit;"></textarea>
+    <button id="submit-feedback" style="margin-top: 12px;">Submit</button>
+    <button id="close-feedback" style="background: #e2e8f0; color: #4a5568;">Close</button>
+  `;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  let selectedRating = 0;
+  box.querySelectorAll('.star').forEach(star => {
+    star.style.cursor = 'pointer';
+    star.style.opacity = '0.3';
+    star.style.transition = 'opacity 0.2s';
+    star.onclick = () => {
+      selectedRating = parseInt(star.dataset.rating);
+      box.querySelectorAll('.star').forEach((s, i) => {
+        s.style.opacity = i < selectedRating ? '1' : '0.3';
+      });
+    };
+  });
+  
+  box.querySelector('#submit-feedback').onclick = () => {
+    if (selectedRating === 0) {
+      alert('Please select a rating!');
+      return;
+    }
+    alert(`✨ Thank you for your feedback! (${selectedRating}⭐)`);
+    document.body.removeChild(modal);
+  };
+  
+  box.querySelector('#close-feedback').onclick = () => document.body.removeChild(modal);
+}
+
 photoButton.onclick = () => {
   const modal = document.createElement('div');
   modal.className = 'modal';
@@ -876,13 +1247,13 @@ photoButton.onclick = () => {
 box.innerHTML = `
   <h2>Export Options</h2>
   <button id="save-png">Export as PNG</button>
-  <button id="save-json">Export as JSON</button>
+  <button id="save-json" ${!isPro ? 'disabled title="PRO feature"' : ''}>Export as JSON ${!isPro ? '👑' : ''}</button>
   <button id="close-save">Cancel</button>
   `;
 
   box.querySelector('#save-png').onclick = () => {
     if (!currentSeatAssignment) {
-      alert("자리 배치가 없습니다. 먼저 좌석을 배치해주세요.");
+      alert("No seat arrangement. Please assign seats first.");
       document.body.removeChild(modal);
       return;
     }
@@ -924,14 +1295,20 @@ box.innerHTML = `
         document.body.removeChild(tempContainer);
       }
       console.error('이미지 저장 오류:', error);
-      alert('이미지 저장 중 오류가 발생했습니다. 브라우저를 새로고침 후 다시 시도해주세요.');
+      alert('An error occurred while saving the image. Please refresh and try again.');
       document.body.removeChild(modal);
     });
   };
 
   box.querySelector('#save-json').onclick = () => {
+    if (!isPro) {
+      alert('🌟 JSON Export is a PRO feature. Please upgrade to RandomSeats PRO.');
+      document.body.removeChild(modal);
+      crownButton.click();
+      return;
+    }
     if (!currentSeatAssignment) {
-      alert("자리 배치가 없습니다.");
+      alert("No seat arrangement to export.");
       document.body.removeChild(modal);
       return;
     }
@@ -960,37 +1337,14 @@ settingsButton.onclick = () => {
 box.innerHTML = `
   <h2>Settings</h2>
   <label><input type="checkbox" id="desk-toggle" ${deskVisible ? 'checked' : ''}> Show Teacher Desk</label>
-  <label><input type="checkbox" id="teacher-view-toggle" ${teacherView ? 'checked' : ''}> Teacher View (Rotate 180°)</label>
-  <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Remove Ads</label>
-    <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">Enter your ad-free key to remove advertisements</p>
-    <input type="text" id="ad-key-input" placeholder="Enter key (e.g., ADK-XXXX-XXXX-XXXX)" ${adRemoved ? 'disabled' : ''} />
-    <div class="error-message" id="key-error"></div>
-    <div class="captcha-container" id="captcha-container" style="${adRemoved ? 'display: none;' : ''}">
-      <div id="turnstile-widget"></div>
-    </div>
-    <button id="remove-ad-button" style="margin-top: 12px;" ${adRemoved ? 'disabled' : ''}>${adRemoved ? 'Ads Removed ✓' : 'Verify & Remove Ads'}</button>
-  </div>
+  <label><input type="checkbox" id="teacher-view-toggle" ${teacherView ? 'checked' : ''} ${!isPro ? 'disabled' : ''}> Teacher View (Rotate 180°) ${!isPro ? '<span style="color: #f59e0b; font-size: 12px;">👑 PRO</span>' : ''}</label>
+
   <button id="close-settings">Close</button>
 `;
 
 
   const deskToggle = box.querySelector('#desk-toggle');
   const teacherViewToggle = box.querySelector('#teacher-view-toggle');
-  const adKeyInput = box.querySelector('#ad-key-input');
-  const removeAdButton = box.querySelector('#remove-ad-button');
-  const keyError = box.querySelector('#key-error');
-  const captchaContainer = box.querySelector('#captcha-container');
-
-  // Turnstile 위젯 렌더링
-  if (!adRemoved && typeof turnstile !== 'undefined') {
-    setTimeout(() => {
-      turnstileWidgetId = turnstile.render('#turnstile-widget', {
-        sitekey: TURNSTILE_SITE_KEY,
-        theme: 'light',
-      });
-    }, 100);
-  }
 
   deskToggle.onchange = () => {
     deskVisible = deskToggle.checked;
@@ -1002,89 +1356,17 @@ box.innerHTML = `
   };
 
   teacherViewToggle.onchange = () => {
+    if (!isPro) {
+      alert('🌟 Teacher View is a PRO feature. Please upgrade to RandomSeats PRO.');
+      teacherViewToggle.checked = false;
+      crownButton.click();
+      return;
+    }
     teacherView = teacherViewToggle.checked;
     if (teacherView) {
       wrapper.classList.add('teacher-view');
     } else {
       wrapper.classList.remove('teacher-view');
-    }
-  };
-
-  removeAdButton.onclick = async () => {
-    const key = adKeyInput.value.trim();
-    
-    // 입력 검증
-    if (!key) {
-      keyError.textContent = 'Please enter a key';
-      keyError.classList.add('show');
-      return;
-    }
-
-    // Turnstile 토큰 가져오기
-    let captchaToken;
-    try {
-      captchaToken = turnstile.getResponse(turnstileWidgetId);
-      if (!captchaToken) {
-        keyError.textContent = 'Please complete the captcha';
-        keyError.classList.add('show');
-        return;
-      }
-    } catch (e) {
-      keyError.textContent = 'Captcha error. Please refresh the page.';
-      keyError.classList.add('show');
-      return;
-    }
-
-    // 버튼 비활성화
-    removeAdButton.disabled = true;
-    removeAdButton.textContent = 'Verifying...';
-    keyError.classList.remove('show');
-
-    try {
-      // Workers API 호출
-      const response = await fetch(WORKER_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key, captchaToken }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        // 성공: localStorage에 저장
-        localStorage.setItem('adRemoved', 'true');
-        adRemoved = true;
-        
-        // 광고 숨기기
-        const adBar = document.querySelector('.ad-bar');
-        if (adBar) adBar.classList.add('hidden');
-        
-        // UI 업데이트
-        removeAdButton.textContent = 'Ads Removed ✓';
-        adKeyInput.disabled = true;
-        captchaContainer.style.display = 'none';
-        
-        alert('✅ Ads have been removed successfully!');
-      } else {
-        // 실패
-        keyError.textContent = result.error || 'Verification failed';
-        keyError.classList.add('show');
-        removeAdButton.disabled = false;
-        removeAdButton.textContent = 'Verify & Remove Ads';
-        
-        // Captcha 리셋
-        turnstile.reset(turnstileWidgetId);
-      }
-    } catch (error) {
-      keyError.textContent = 'Network error. Please try again.';
-      keyError.classList.add('show');
-      removeAdButton.disabled = false;
-      removeAdButton.textContent = 'Verify & Remove Ads';
-      
-      // Captcha 리셋
-      if (turnstileWidgetId) {
-        turnstile.reset(turnstileWidgetId);
-      }
     }
   };
 
@@ -1128,8 +1410,6 @@ box.innerHTML = `
 renderEmptySeats();
 </script>
 
-<!-- 카카오 광고 스크립트 -->
-<script async type="text/javascript"
-  src="https://t1.daumcdn.net/kas/static/ba.min.js"></script>
+
 </body>
 </html>
