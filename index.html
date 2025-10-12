@@ -40,6 +40,187 @@
       overflow: hidden;
     }
     
+    /* 다크모드 지원 (시스템 설정 기반) */
+    @media (prefers-color-scheme: dark) {
+      html, body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      }
+      
+      #seat-container {
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      #seat-container::after {
+        color: #666;
+      }
+      
+      /* 다이나믹 아일랜드 */
+      #dynamic-island {
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      
+      /* 버튼들 */
+      .button {
+        background: rgba(50, 50, 50, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      
+      .button:hover {
+        background: rgba(70, 70, 70, 0.95);
+      }
+      
+      /* 모달 배경 */
+      .modal {
+        background: rgba(0, 0, 0, 0.8);
+      }
+      
+      /* 모달 박스 */
+      .modal-box {
+        background: #2d2d2d;
+        color: #e0e0e0;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      }
+      
+      .modal-box h2 {
+        color: #e0e0e0;
+      }
+      
+      .modal-box p {
+        color: #b0b0b0;
+      }
+      
+      .modal-box label {
+        color: #b0b0b0;
+      }
+      
+      .modal-box label:hover {
+        color: #d0d0d0;
+      }
+      
+      /* 체크박스 */
+      .modal-box input[type="checkbox"] {
+        filter: brightness(1.2);
+      }
+      
+      .modal-box ul {
+        color: #b0b0b0;
+      }
+      
+      .modal-box ul li {
+        color: #b0b0b0;
+      }
+      
+      /* 모달 버튼 */
+      .modal-box button {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #ffffff;
+      }
+      
+      .modal-box button:hover {
+        background: linear-gradient(135deg, #7c8ef5, #8558b3);
+      }
+      
+      /* 특수 버튼들 */
+      .modal-box button[id*="close"],
+      .modal-box button[id*="cancel"] {
+        background: #3a3a3a;
+        color: #b0b0b0;
+      }
+      
+      .modal-box button[id*="close"]:hover,
+      .modal-box button[id*="cancel"]:hover {
+        background: #4a4a4a;
+        color: #e0e0e0;
+      }
+      
+      .modal-box button[id*="delete"],
+      .modal-box button[id*="logout"] {
+        background: #dc2626;
+      }
+      
+      .modal-box button[id*="delete"]:hover,
+      .modal-box button[id*="logout"]:hover {
+        background: #b91c1c;
+      }
+      
+      /* 배경이 있는 영역 */
+      .modal-box div[style*="background"] {
+        background: #3a3a3a !important;
+      }
+      
+      /* 별점 시스템 */
+      .star {
+        filter: brightness(1.2);
+      }
+      
+      /* Strong 태그 */
+      .modal-box strong {
+        color: #e0e0e0;
+      }
+      
+      /* 계정 정보 박스 */
+      .modal-box div[style*="#f9fafb"] {
+        background: #3a3a3a !important;
+        border: 1px solid #555;
+      }
+      
+      /* PRO 상태 표시 */
+      .modal-box span[style*="#f59e0b"] {
+        color: #fbbf24 !important;
+      }
+      
+      .modal-box span[style*="#059669"] {
+        color: #10b981 !important;
+      }
+      
+      /* 입력 필드 */
+      .modal-box input[type="text"],
+      .modal-box input[type="email"],
+      .modal-box input[type="password"],
+      .modal-box input[type="checkbox"],
+      .modal-box textarea {
+        background: #3a3a3a;
+        color: #e0e0e0;
+        border-color: #555;
+      }
+      
+      .modal-box input[type="text"]:focus,
+      .modal-box input[type="email"]:focus,
+      .modal-box input[type="password"]:focus,
+      .modal-box textarea:focus {
+        border-color: #667eea;
+        background: #404040;
+      }
+      
+      .modal-box input[type="text"]::placeholder,
+      .modal-box input[type="email"]::placeholder,
+      .modal-box input[type="password"]::placeholder,
+      .modal-box textarea::placeholder {
+        color: #888;
+      }
+      
+      /* 에러 메시지 */
+      .error-message {
+        color: #ff6b6b;
+      }
+      
+      /* 링크 */
+      .modal-box a {
+        color: #a78bfa;
+      }
+      
+      .modal-box a:hover {
+        color: #c4b5fd;
+      }
+      
+      /* 프로모션 바 (다크모드에서는 약간 어둡게) */
+      .promo-bar {
+        filter: brightness(0.85);
+      }
+    }
+    
     #wrapper {
       display: flex;
       flex-direction: column;
@@ -704,9 +885,60 @@ let turnstileWidgetId = null;
 let currentUser = null; // 현재 로그인된 사용자
 
 // Cloudflare Workers API URL
-const WORKER_API_URL = 'https://ad-keys.eunsung-lee-460.workers.dev/';
+const WORKER_API_URL = 'https://ad-keys.eunsung-lee-460.workers.dev/'; // 꼭 슬래시!
 const AUTH_API_URL = 'https://ad-keys.eunsung-lee-460.workers.dev/auth'; // Auth 엔드포인트
 const TURNSTILE_SITE_KEY = '0x4AAAAAAB6AJ6Melx1ZJUyZ'; // Turnstile 사이트 키
+
+// 비밀번호 유효성 검사 함수
+function validatePassword(password) {
+  const errors = [];
+  
+  // 최소 8자 이상
+  if (password.length < 8) {
+    errors.push('At least 8 characters');
+  }
+  
+  // 대문자 포함
+  if (!/[A-Z]/.test(password)) {
+    errors.push('At least one uppercase letter (A-Z)');
+  }
+  
+  // 소문자 포함
+  if (!/[a-z]/.test(password)) {
+    errors.push('At least one lowercase letter (a-z)');
+  }
+  
+  // 숫자 포함
+  if (!/[0-9]/.test(password)) {
+    errors.push('At least one number (0-9)');
+  }
+  
+  // 특수문자 포함
+  if (!/[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/'';~`]/.test(password)) {
+    errors.push('At least one special character (!@#$%^&*...)');;
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors: errors
+  };
+}
+
+// 비밀번호 강도 표시 함수
+function getPasswordStrength(password) {
+  let strength = 0;
+  
+  if (password.length >= 8) strength++;
+  if (password.length >= 12) strength++;
+  if (/[A-Z]/.test(password)) strength++;
+  if (/[a-z]/.test(password)) strength++;
+  if (/[0-9]/.test(password)) strength++;
+  if (/[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/'';~`]/.test(password)) strength++;
+  
+  if (strength <= 2) return { level: 'weak', color: '#ef4444', text: 'Weak' };
+  if (strength <= 4) return { level: 'medium', color: '#f59e0b', text: 'Medium' };
+  return { level: 'strong', color: '#10b981', text: 'Strong' };
+}
 
 // 페이지 로드시 PRO 상태 확인 (localStorage 사용)
 if (localStorage.getItem('isPro') === 'true') {
@@ -1089,24 +1321,53 @@ accountButton.onclick = () => {
     box.className = 'modal-box';
     box.innerHTML = `
       <h2>👤 Account</h2>
-      <p><strong>Name:</strong> ${currentUser.name || 'N/A'}</p>
-      <p><strong>Email:</strong> ${currentUser.email}</p>
-      <p><strong>Provider:</strong> ${currentUser.provider}</p>
-      <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-        <strong>Settings sync:</strong> ${currentUser.settings ? 'Enabled' : 'Disabled'}
+      <p style="font-size: 14px; color: #059669; font-weight: 600; margin-bottom: 16px;">
+        ✅ Logged in as ${currentUser.name || currentUser.email}
       </p>
-      <button id="logout-button" style="background: #ef4444; margin-top: 12px;">Logout</button>
+      <div style="background: #f9fafb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+        <p style="margin-bottom: 8px;"><strong>Email:</strong> ${currentUser.email}</p>
+        <p style="margin-bottom: 8px;"><strong>Provider:</strong> ${currentUser.provider}</p>
+        <p><strong>PRO Status:</strong> ${isPro ? '<span style="color: #f59e0b;">👑 Active</span>' : 'Free'}</p>
+      </div>
+      <button id="change-password-button" style="background: #3b82f6; margin-top: 12px;">🔑 Change Password</button>
+      <button id="forgot-password-button" style="background: #8b5cf6; margin-top: 12px;">🔐 Forgot Password</button>
+      <button id="logout-button" style="background: #ef4444; margin-top: 12px;">🚪 Logout</button>
+      <button id="delete-account-button" style="background: #991b1b; margin-top: 12px;">🗑️ Delete Account</button>
       <button id="close-account">Close</button>
     `;
     modal.appendChild(box);
     document.body.appendChild(modal);
     
+    box.querySelector('#change-password-button').onclick = () => {
+      document.body.removeChild(modal);
+      handleChangePassword();
+    };
+    
+    box.querySelector('#forgot-password-button').onclick = () => {
+      document.body.removeChild(modal);
+      handleForgotPassword();
+    };
+    
     box.querySelector('#logout-button').onclick = () => {
       currentUser = null;
+      isPro = false;
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('isPro');
       updateAccountButton();
       document.body.removeChild(modal);
-      showModal('✅ Logged Out', '<p>You have been successfully logged out.</p>');
+      
+      // PRO 상태 해제
+      const promoBar = document.querySelector('.promo-bar');
+      if (promoBar) promoBar.classList.remove('hidden');
+      const crownBtn = document.getElementById('crown-button');
+      if (crownBtn) crownBtn.classList.remove('pro');
+      document.body.classList.remove('pro-active');
+      document.getElementById('wrapper').classList.remove('pro-active');
+    };
+    
+    box.querySelector('#delete-account-button').onclick = () => {
+      document.body.removeChild(modal);
+      handleDeleteAccount();
     };
     
     box.querySelector('#close-account').onclick = () => document.body.removeChild(modal);
@@ -1118,9 +1379,12 @@ accountButton.onclick = () => {
     box.className = 'modal-box';
     box.innerHTML = `
       <h2>👤 Sign In</h2>
-      <p>Sign in to sync your settings across devices.</p>
+      <p>Sign in to sync your PRO status across devices.</p>
       <button id="google-login" style="background: #4285f4; margin-top: 20px;">
         <i class="fa-brands fa-google"></i> Sign in with Google
+      </button>
+      <button id="email-login" style="background: #10b981; margin-top: 12px;">
+        <i class="fa-solid fa-envelope"></i> Sign in with Email
       </button>
       <button id="microsoft-login" style="background: #0078d4; margin-top: 12px;">
         <i class="fa-brands fa-microsoft"></i> Sign in with Microsoft
@@ -1138,9 +1402,14 @@ accountButton.onclick = () => {
       handleOAuthLogin('google');
     };
     
+    box.querySelector('#email-login').onclick = () => {
+      document.body.removeChild(modal);
+      handleEmailLogin();
+    };
+    
     box.querySelector('#microsoft-login').onclick = () => {
       document.body.removeChild(modal);
-      handleOAuthLogin('microsoft');
+      showModal('🚧 Coming Soon', '<p>Microsoft login is currently under development.</p><p>Please use Google, Email, or GitHub login instead.</p>');
     };
     
     box.querySelector('#github-login').onclick = () => {
@@ -1151,6 +1420,823 @@ accountButton.onclick = () => {
     box.querySelector('#close-login').onclick = () => document.body.removeChild(modal);
   }
 };
+
+// 비밀번호 재설정 처리 (비밀번호 잊어버림)
+async function handleForgotPassword() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  
+  box.innerHTML = `
+    <h2>🔐 Forgot Password</h2>
+    <p style="margin-bottom: 16px;">Enter your email to receive a password reset code.</p>
+    <input type="email" id="reset-email" placeholder="your@email.com" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+    <div class="captcha-container" id="reset-captcha-container">
+      <div id="reset-turnstile-widget"></div>
+    </div>
+    <div class="error-message" id="reset-error"></div>
+    <button id="send-reset-code" style="background: #8b5cf6; margin-top: 12px;">Send Reset Code</button>
+    <button id="cancel-reset" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  // Turnstile 위젯 렌더링
+  let resetTurnstileId;
+  setTimeout(() => {
+    if (typeof turnstile !== 'undefined') {
+      resetTurnstileId = turnstile.render('#reset-turnstile-widget', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      });
+    }
+  }, 100);
+  
+  const emailInput = box.querySelector('#reset-email');
+  const sendBtn = box.querySelector('#send-reset-code');
+  const cancelBtn = box.querySelector('#cancel-reset');
+  const errorMsg = box.querySelector('#reset-error');
+  
+  sendBtn.onclick = async () => {
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+      errorMsg.textContent = 'Email required';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    let captchaToken;
+    try {
+      captchaToken = turnstile.getResponse(resetTurnstileId);
+      if (!captchaToken) {
+        errorMsg.textContent = 'Please complete the captcha';
+        errorMsg.classList.add('show');
+        return;
+      }
+    } catch (e) {
+      errorMsg.textContent = 'Captcha error. Please refresh the page.';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/reset-password-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, captchaToken }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        document.body.removeChild(modal);
+        // 다음 단계: 코드 입력 모달
+        showResetCodeModal(email);
+      } else {
+        errorMsg.textContent = data.error || 'Failed to send reset code';
+        errorMsg.classList.add('show');
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send Reset Code';
+        if (resetTurnstileId) turnstile.reset(resetTurnstileId);
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send Reset Code';
+      if (resetTurnstileId) turnstile.reset(resetTurnstileId);
+    }
+  };
+  
+  cancelBtn.onclick = () => document.body.removeChild(modal);
+}
+
+// 리셋 코드 확인 모달
+function showResetCodeModal(email) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  
+  box.innerHTML = `
+    <h2>📬 Enter Reset Code</h2>
+    <p style="margin-bottom: 16px;">A 6-digit code has been sent to <strong>${email}</strong></p>
+    <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Check your email (including spam folder)</p>
+    <input type="text" id="reset-code" placeholder="123456" maxlength="6" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; text-align: center; font-size: 18px; letter-spacing: 4px; font-family: monospace;" />
+    <input type="password" id="new-password" placeholder="New Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px;" />
+    <div id="reset-password-strength" style="margin-bottom: 8px; font-size: 12px; display: none;"></div>
+    <div id="reset-password-requirements" style="margin-bottom: 12px; font-size: 12px; color: #6b7280; display: none;">
+      <p style="font-weight: 600; margin-bottom: 4px;">Password must contain:</p>
+      <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+        <li id="reset-req-length">At least 8 characters</li>
+        <li id="reset-req-upper">One uppercase letter (A-Z)</li>
+        <li id="reset-req-lower">One lowercase letter (a-z)</li>
+        <li id="reset-req-number">One number (0-9)</li>
+        <li id="reset-req-special">One special character (!@#$%...)</li>
+      </ul>
+    </div>
+    <input type="password" id="confirm-new-password" placeholder="Confirm New Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+    <div class="error-message" id="code-error"></div>
+    <button id="confirm-reset" style="background: #8b5cf6; margin-top: 12px;">Reset Password</button>
+    <button id="resend-code" style="background: #3b82f6; margin-top: 12px;">Resend Code</button>
+    <button id="cancel-code" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  const codeInput = box.querySelector('#reset-code');
+  const newPasswordInput = box.querySelector('#new-password');
+  const confirmPasswordInput = box.querySelector('#confirm-new-password');
+  const confirmBtn = box.querySelector('#confirm-reset');
+  const resendBtn = box.querySelector('#resend-code');
+  const cancelBtn = box.querySelector('#cancel-code');
+  const errorMsg = box.querySelector('#code-error');
+  const strengthDiv = box.querySelector('#reset-password-strength');
+  const requirementsDiv = box.querySelector('#reset-password-requirements');
+  
+  // 숫자만 입력 가능
+  codeInput.oninput = () => {
+    codeInput.value = codeInput.value.replace(/[^0-9]/g, '');
+  };
+  
+  // 비밀번호 입력 시 실시간 강도 표시
+  newPasswordInput.oninput = () => {
+    const password = newPasswordInput.value;
+    
+    if (password.length > 0) {
+      strengthDiv.style.display = 'block';
+      requirementsDiv.style.display = 'block';
+      
+      const strength = getPasswordStrength(password);
+      strengthDiv.innerHTML = `Password Strength: <strong style="color: ${strength.color};">${strength.text}</strong>`;
+      
+      const reqLength = box.querySelector('#reset-req-length');
+      const reqUpper = box.querySelector('#reset-req-upper');
+      const reqLower = box.querySelector('#reset-req-lower');
+      const reqNumber = box.querySelector('#reset-req-number');
+      const reqSpecial = box.querySelector('#reset-req-special');
+      
+      reqLength.style.color = password.length >= 8 ? '#10b981' : '#6b7280';
+      reqLength.innerHTML = password.length >= 8 ? '✅ At least 8 characters' : 'At least 8 characters';
+      
+      reqUpper.style.color = /[A-Z]/.test(password) ? '#10b981' : '#6b7280';
+      reqUpper.innerHTML = /[A-Z]/.test(password) ? '✅ One uppercase letter (A-Z)' : 'One uppercase letter (A-Z)';
+      
+      reqLower.style.color = /[a-z]/.test(password) ? '#10b981' : '#6b7280';
+      reqLower.innerHTML = /[a-z]/.test(password) ? '✅ One lowercase letter (a-z)' : 'One lowercase letter (a-z)';
+      
+      reqNumber.style.color = /[0-9]/.test(password) ? '#10b981' : '#6b7280';
+      reqNumber.innerHTML = /[0-9]/.test(password) ? '✅ One number (0-9)' : 'One number (0-9)';
+      
+      reqSpecial.style.color = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/'';~`]/.test(password) ? '#10b981' : '#6b7280';
+      reqSpecial.innerHTML = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/'';~`]/.test(password) ? '✅ One special character (!@#$%...)' : 'One special character (!@#$%...)';
+    } else {
+      strengthDiv.style.display = 'none';
+      requirementsDiv.style.display = 'none';
+    }
+  };
+  
+  confirmBtn.onclick = async () => {
+    const code = codeInput.value.trim();
+    const newPassword = newPasswordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    
+    if (!code || code.length !== 6) {
+      errorMsg.textContent = 'Please enter the 6-digit code';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    // 비밀번호 유효성 검사
+    const validation = validatePassword(newPassword);
+    if (!validation.isValid) {
+      errorMsg.innerHTML = '<strong>Password requirements not met:</strong><br>' + validation.errors.join('<br>');
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      errorMsg.textContent = 'Passwords do not match';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Resetting...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/reset-password-confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, resetCode: code, newPassword }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        document.body.removeChild(modal);
+        showModal('✅ Password Reset', '<p>Your password has been successfully reset.</p><p>Please login with your new password.</p>');
+      } else {
+        errorMsg.textContent = data.error || 'Invalid or expired code';
+        errorMsg.classList.add('show');
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Reset Password';
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Reset Password';
+    }
+  };
+  
+  resendBtn.onclick = () => {
+    document.body.removeChild(modal);
+    handleForgotPassword();
+  };
+  
+  cancelBtn.onclick = () => document.body.removeChild(modal);
+}
+
+// 비밀번호 변경 처리
+async function handleChangePassword() {
+  if (!currentUser) {
+    showModal('❌ Error', '<p>No user logged in</p>');
+    return;
+  }
+
+  // 이메일 계정만 비밀번호 변경 가능
+  if (currentUser.provider !== 'email') {
+    showModal('⚠️ Not Available', '<p>Password change is only available for email accounts.</p><p>OAuth accounts (Google, GitHub) use their provider\'s security.</p>');
+    return;
+  }
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  
+  box.innerHTML = `
+    <h2>🔑 Change Password</h2>
+    <p style="margin-bottom: 16px;">Enter your current password and new password.</p>
+    <input type="password" id="current-password" placeholder="Current Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+    <input type="password" id="new-password" placeholder="New Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px;" />
+    <div id="change-password-strength" style="margin-bottom: 8px; font-size: 12px; display: none;"></div>
+    <div id="change-password-requirements" style="margin-bottom: 12px; font-size: 12px; color: #6b7280; display: none;">
+      <p style="font-weight: 600; margin-bottom: 4px;">Password must contain:</p>
+      <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+        <li id="change-req-length">At least 8 characters</li>
+        <li id="change-req-upper">One uppercase letter (A-Z)</li>
+        <li id="change-req-lower">One lowercase letter (a-z)</li>
+        <li id="change-req-number">One number (0-9)</li>
+        <li id="change-req-special">One special character (!@#$%...)</li>
+      </ul>
+    </div>
+    <input type="password" id="confirm-password" placeholder="Confirm New Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+    <div class="captcha-container" id="change-password-captcha-container">
+      <div id="change-password-turnstile-widget"></div>
+    </div>
+    <div class="error-message" id="change-password-error"></div>
+    <button id="confirm-change-password" style="background: #3b82f6; margin-top: 12px;">Change Password</button>
+    <button id="cancel-change-password" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  // Turnstile 위젯 렌더링
+  let changePwTurnstileId;
+  setTimeout(() => {
+    if (typeof turnstile !== 'undefined') {
+      changePwTurnstileId = turnstile.render('#change-password-turnstile-widget', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      });
+    }
+  }, 100);
+  
+  const currentPasswordInput = box.querySelector('#current-password');
+  const newPasswordInput = box.querySelector('#new-password');
+  const confirmPasswordInput = box.querySelector('#confirm-password');
+  const confirmBtn = box.querySelector('#confirm-change-password');
+  const cancelBtn = box.querySelector('#cancel-change-password');
+  const errorMsg = box.querySelector('#change-password-error');
+  const strengthDiv = box.querySelector('#change-password-strength');
+  const requirementsDiv = box.querySelector('#change-password-requirements');
+  
+  // 비밀번호 입력 시 실시간 강도 표시
+  newPasswordInput.oninput = () => {
+    const password = newPasswordInput.value;
+    
+    if (password.length > 0) {
+      strengthDiv.style.display = 'block';
+      requirementsDiv.style.display = 'block';
+      
+      const strength = getPasswordStrength(password);
+      strengthDiv.innerHTML = `Password Strength: <strong style="color: ${strength.color};">${strength.text}</strong>`;
+      
+      const reqLength = box.querySelector('#change-req-length');
+      const reqUpper = box.querySelector('#change-req-upper');
+      const reqLower = box.querySelector('#change-req-lower');
+      const reqNumber = box.querySelector('#change-req-number');
+      const reqSpecial = box.querySelector('#change-req-special');
+      
+      reqLength.style.color = password.length >= 8 ? '#10b981' : '#6b7280';
+      reqLength.innerHTML = password.length >= 8 ? '✅ At least 8 characters' : 'At least 8 characters';
+      
+      reqUpper.style.color = /[A-Z]/.test(password) ? '#10b981' : '#6b7280';
+      reqUpper.innerHTML = /[A-Z]/.test(password) ? '✅ One uppercase letter (A-Z)' : 'One uppercase letter (A-Z)';
+      
+      reqLower.style.color = /[a-z]/.test(password) ? '#10b981' : '#6b7280';
+      reqLower.innerHTML = /[a-z]/.test(password) ? '✅ One lowercase letter (a-z)' : 'One lowercase letter (a-z)';
+      
+      reqNumber.style.color = /[0-9]/.test(password) ? '#10b981' : '#6b7280';
+      reqNumber.innerHTML = /[0-9]/.test(password) ? '✅ One number (0-9)' : 'One number (0-9)';
+      
+      reqSpecial.style.color = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/''`;~`]/.test(password) ? '#10b981' : '#6b7280';
+      reqSpecial.innerHTML = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/''`;~`]/.test(password) ? '✅ One special character (!@#$%...)' : 'One special character (!@#$%...)';
+    } else {
+      strengthDiv.style.display = 'none';
+      requirementsDiv.style.display = 'none';
+    }
+  };
+  
+  confirmBtn.onclick = async () => {
+    const currentPassword = currentPasswordInput.value;
+    const newPassword = newPasswordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      errorMsg.textContent = 'All fields are required';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    // 비밀번호 유효성 검사
+    const validation = validatePassword(newPassword);
+    if (!validation.isValid) {
+      errorMsg.innerHTML = '<strong>Password requirements not met:</strong><br>' + validation.errors.join('<br>');
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      errorMsg.textContent = 'New passwords do not match';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    let captchaToken;
+    try {
+      captchaToken = turnstile.getResponse(changePwTurnstileId);
+      if (!captchaToken) {
+        errorMsg.textContent = 'Please complete the captcha';
+        errorMsg.classList.add('show');
+        return;
+      }
+    } catch (e) {
+      errorMsg.textContent = 'Captcha error. Please refresh the page.';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Changing...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: currentUser.email,
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+          captchaToken: captchaToken
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        document.body.removeChild(modal);
+        showModal('✅ Password Changed', '<p>Your password has been successfully changed.</p>');
+      } else {
+        errorMsg.textContent = data.error || 'Password change failed';
+        errorMsg.classList.add('show');
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Change Password';
+        if (changePwTurnstileId) turnstile.reset(changePwTurnstileId);
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Change Password';
+      if (changePwTurnstileId) turnstile.reset(changePwTurnstileId);
+    }
+  };
+  
+  cancelBtn.onclick = () => document.body.removeChild(modal);
+}
+
+// 🔥 회원탈퇴 처리 - 2단계 인증 방식
+async function handleDeleteAccount() {
+  if (!currentUser) {
+    showModal('❌ Error', '<p>No user logged in</p>');
+    return;
+  }
+
+  // 1단계: 비밀번호 확인 & 인증 코드 요청
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  
+  if (currentUser.provider === 'email') {
+    // 이메일 계정은 비밀번호 확인 필요
+    box.innerHTML = `
+      <h2>⚠️ Delete Account - Step 1</h2>
+      <p style="color: #dc2626; font-weight: 600; margin-bottom: 16px;">⚠️ This action cannot be undone!</p>
+      <p style="margin-bottom: 16px;">Enter your password to receive a verification code.</p>
+      <input type="password" id="delete-password" placeholder="Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+      <div class="captcha-container" id="delete-captcha-container">
+        <div id="delete-turnstile-widget"></div>
+      </div>
+      <div class="error-message" id="delete-error"></div>
+      <button id="send-delete-code" style="background: #dc2626; margin-top: 12px;">Send Verification Code</button>
+      <button id="cancel-delete" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+    `;
+  } else {
+    // OAuth 계정은 비밀번호 없이 진행
+    box.innerHTML = `
+      <h2>⚠️ Delete Account - Step 1</h2>
+      <p style="color: #dc2626; font-weight: 600; margin-bottom: 16px;">⚠️ This action cannot be undone!</p>
+      <p style="margin-bottom: 16px;">Click below to receive a verification code at <strong>${currentUser.email}</strong></p>
+      <div class="captcha-container" id="delete-captcha-container">
+        <div id="delete-turnstile-widget"></div>
+      </div>
+      <div class="error-message" id="delete-error"></div>
+      <button id="send-delete-code" style="background: #dc2626; margin-top: 12px;">Send Verification Code</button>
+      <button id="cancel-delete" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+    `;
+  }
+  
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  // Turnstile 위젯 렌더링
+  let deleteTurnstileId;
+  setTimeout(() => {
+    if (typeof turnstile !== 'undefined') {
+      deleteTurnstileId = turnstile.render('#delete-turnstile-widget', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      });
+    }
+  }, 100);
+  
+  const sendBtn = box.querySelector('#send-delete-code');
+  const cancelBtn = box.querySelector('#cancel-delete');
+  const errorMsg = box.querySelector('#delete-error');
+  
+  sendBtn.onclick = async () => {
+    let password = null;
+    if (currentUser.provider === 'email') {
+      password = box.querySelector('#delete-password').value;
+      if (!password) {
+        errorMsg.textContent = 'Password required';
+        errorMsg.classList.add('show');
+        return;
+      }
+    }
+    
+    let captchaToken;
+    try {
+      captchaToken = turnstile.getResponse(deleteTurnstileId);
+      if (!captchaToken) {
+        errorMsg.textContent = 'Please complete the captcha';
+        errorMsg.classList.add('show');
+        return;
+      }
+    } catch (e) {
+      errorMsg.textContent = 'Captcha error. Please refresh the page.';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/delete-account-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: currentUser.email,
+          password: password,
+          captchaToken: captchaToken
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        document.body.removeChild(modal);
+        // 2단계: 인증 코드 입력 모달
+        showDeleteCodeModal(currentUser.email);
+      } else {
+        errorMsg.textContent = data.error || 'Failed to send verification code';
+        errorMsg.classList.add('show');
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send Verification Code';
+        if (deleteTurnstileId) turnstile.reset(deleteTurnstileId);
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send Verification Code';
+      if (deleteTurnstileId) turnstile.reset(deleteTurnstileId);
+    }
+  };
+  
+  cancelBtn.onclick = () => document.body.removeChild(modal);
+}
+
+// 2단계: 회원탈퇴 인증 코드 확인 모달
+function showDeleteCodeModal(email) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  
+  box.innerHTML = `
+    <h2>⚠️ Delete Account - Step 2</h2>
+    <p style="margin-bottom: 16px;">A 6-digit code has been sent to <strong>${email}</strong></p>
+    <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Check your email (including spam folder)</p>
+    <input type="text" id="delete-code" placeholder="123456" maxlength="6" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; text-align: center; font-size: 18px; letter-spacing: 4px; font-family: monospace;" />
+    <div class="error-message" id="code-error"></div>
+    <button id="confirm-delete" style="background: #dc2626; margin-top: 12px;">⚠️ DELETE ACCOUNT</button>
+    <button id="resend-delete-code" style="background: #3b82f6; margin-top: 12px;">Resend Code</button>
+    <button id="cancel-code" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  const codeInput = box.querySelector('#delete-code');
+  const confirmBtn = box.querySelector('#confirm-delete');
+  const resendBtn = box.querySelector('#resend-delete-code');
+  const cancelBtn = box.querySelector('#cancel-code');
+  const errorMsg = box.querySelector('#code-error');
+  
+  // 숫자만 입력 가능
+  codeInput.oninput = () => {
+    codeInput.value = codeInput.value.replace(/[^0-9]/g, '');
+  };
+  
+  confirmBtn.onclick = async () => {
+    const code = codeInput.value.trim();
+    
+    if (!code || code.length !== 6) {
+      errorMsg.textContent = 'Please enter the 6-digit code';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Deleting...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/delete-account-confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // 로그아웃 처리
+        currentUser = null;
+        isPro = false;
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('isPro');
+        updateAccountButton();
+        
+        const promoBar = document.querySelector('.promo-bar');
+        if (promoBar) promoBar.classList.remove('hidden');
+        const crownBtn = document.getElementById('crown-button');
+        if (crownBtn) crownBtn.classList.remove('pro');
+        document.body.classList.remove('pro-active');
+        document.getElementById('wrapper').classList.remove('pro-active');
+        
+        document.body.removeChild(modal);
+        showModal('✅ Account Deleted', '<p>Your account has been permanently deleted.</p>');
+      } else {
+        errorMsg.textContent = data.error || 'Invalid or expired code';
+        errorMsg.classList.add('show');
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = '⚠️ DELETE ACCOUNT';
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = '⚠️ DELETE ACCOUNT';
+    }
+  };
+  
+  resendBtn.onclick = () => {
+    document.body.removeChild(modal);
+    handleDeleteAccount();
+  };
+  
+  cancelBtn.onclick = () => document.body.removeChild(modal);
+}
+
+// 이메일 로그인 처리
+async function handleEmailLogin() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>📧 Email Login</h2>
+    <p style="margin-bottom: 16px;">Enter your email to sign in</p>
+    <input type="email" id="email-input" placeholder="your@email.com" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+    <input type="password" id="password-input" placeholder="Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px;" />
+    <div id="password-strength" style="margin-bottom: 8px; font-size: 12px; display: none;"></div>
+    <div id="password-requirements" style="margin-bottom: 12px; font-size: 12px; color: #6b7280; display: none;">
+      <p style="font-weight: 600; margin-bottom: 4px;">Password must contain:</p>
+      <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+        <li id="req-length">At least 8 characters</li>
+        <li id="req-upper">One uppercase letter (A-Z)</li>
+        <li id="req-lower">One lowercase letter (a-z)</li>
+        <li id="req-number">One number (0-9)</li>
+        <li id="req-special">One special character (!@#$%...)</li>
+      </ul>
+    </div>
+    <p style="text-align: right; margin-bottom: 12px;"><a href="#" id="forgot-password-link" style="color: #8b5cf6; font-size: 13px; text-decoration: none;">Forgot password?</a></p>
+    <div class="captcha-container" id="email-captcha-container">
+      <div id="email-turnstile-widget"></div>
+    </div>
+    <div class="error-message" id="email-login-error"></div>
+    <button id="email-login-submit" style="margin-top: 12px;">Sign In</button>
+    <button id="close-email-login" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  // Turnstile 위젯 렌더링
+  let emailTurnstileId;
+  setTimeout(() => {
+    if (typeof turnstile !== 'undefined') {
+      emailTurnstileId = turnstile.render('#email-turnstile-widget', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      });
+    }
+  }, 100);
+  
+  const emailInput = box.querySelector('#email-input');
+  const passwordInput = box.querySelector('#password-input');
+  const submitBtn = box.querySelector('#email-login-submit');
+  const errorMsg = box.querySelector('#email-login-error');
+  const forgotLink = box.querySelector('#forgot-password-link');
+  const strengthDiv = box.querySelector('#password-strength');
+  const requirementsDiv = box.querySelector('#password-requirements');
+  
+  // 비밀번호 입력 시 실시간 강도 표시 및 조건 체크
+  passwordInput.oninput = () => {
+    const password = passwordInput.value;
+    
+    if (password.length > 0) {
+      strengthDiv.style.display = 'block';
+      requirementsDiv.style.display = 'block';
+      
+      // 강도 표시
+      const strength = getPasswordStrength(password);
+      strengthDiv.innerHTML = `Password Strength: <strong style="color: ${strength.color};">${strength.text}</strong>`;
+      
+      // 조건 체크
+      const reqLength = box.querySelector('#req-length');
+      const reqUpper = box.querySelector('#req-upper');
+      const reqLower = box.querySelector('#req-lower');
+      const reqNumber = box.querySelector('#req-number');
+      const reqSpecial = box.querySelector('#req-special');
+      
+      reqLength.style.color = password.length >= 8 ? '#10b981' : '#6b7280';
+      reqLength.innerHTML = password.length >= 8 ? '✅ At least 8 characters' : 'At least 8 characters';
+      
+      reqUpper.style.color = /[A-Z]/.test(password) ? '#10b981' : '#6b7280';
+      reqUpper.innerHTML = /[A-Z]/.test(password) ? '✅ One uppercase letter (A-Z)' : 'One uppercase letter (A-Z)';
+      
+      reqLower.style.color = /[a-z]/.test(password) ? '#10b981' : '#6b7280';
+      reqLower.innerHTML = /[a-z]/.test(password) ? '✅ One lowercase letter (a-z)' : 'One lowercase letter (a-z)';
+      
+      reqNumber.style.color = /[0-9]/.test(password) ? '#10b981' : '#6b7280';
+      reqNumber.innerHTML = /[0-9]/.test(password) ? '✅ One number (0-9)' : 'One number (0-9)';
+      
+      reqSpecial.style.color = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/'';~`]/.test(password) ? '#10b981' : '#6b7280';
+      reqSpecial.innerHTML = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/'';~`]/.test(password) ? '✅ One special character (!@#$%...)' : 'One special character (!@#$%...)';
+    } else {
+      strengthDiv.style.display = 'none';
+      requirementsDiv.style.display = 'none';
+    }
+  };
+  
+  forgotLink.onclick = (e) => {
+    e.preventDefault();
+    document.body.removeChild(modal);
+    handleForgotPassword();
+  };
+  
+  submitBtn.onclick = async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    
+    if (!email || !password) {
+      errorMsg.textContent = 'Please enter both email and password';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    // 비밀번호 유효성 검사 (회원가입 시에만 적용)
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      errorMsg.innerHTML = '<strong>Password requirements not met:</strong><br>' + validation.errors.join('<br>');
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    // 캡챠 확인
+    let captchaToken;
+    try {
+      captchaToken = turnstile.getResponse(emailTurnstileId);
+      if (!captchaToken) {
+        errorMsg.textContent = 'Please complete the captcha';
+        errorMsg.classList.add('show');
+        return;
+      }
+    } catch (e) {
+      errorMsg.textContent = 'Captcha error. Please refresh the page.';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Signing in...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/email-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, captchaToken }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        currentUser = data.user;
+        isPro = data.user.isPro || false;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        if (isPro) {
+          localStorage.setItem('isPro', 'true');
+          const promoBar = document.querySelector('.promo-bar');
+          if (promoBar) promoBar.classList.add('hidden');
+          const crownBtn = document.getElementById('crown-button');
+          if (crownBtn) crownBtn.classList.add('pro');
+          document.body.classList.add('pro-active');
+          document.getElementById('wrapper').classList.add('pro-active');
+        }
+        updateAccountButton();
+        document.body.removeChild(modal);
+      } else {
+        errorMsg.textContent = data.error || 'Login failed';
+        errorMsg.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+        if (emailTurnstileId) turnstile.reset(emailTurnstileId);
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign In';
+      if (emailTurnstileId) turnstile.reset(emailTurnstileId);
+    }
+  };
+  
+  box.querySelector('#close-email-login').onclick = () => document.body.removeChild(modal);
+}
 
 // OAuth 로그인 처리
 async function handleOAuthLogin(provider) {
@@ -1186,9 +2272,18 @@ async function handleOAuthLogin(provider) {
         
         if (event.data.type === 'oauth-success') {
           currentUser = event.data.user;
+          isPro = event.data.user.isPro || false;
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          if (isPro) {
+            localStorage.setItem('isPro', 'true');
+            const promoBar = document.querySelector('.promo-bar');
+            if (promoBar) promoBar.classList.add('hidden');
+            const crownBtn = document.getElementById('crown-button');
+            if (crownBtn) crownBtn.classList.add('pro');
+            document.body.classList.add('pro-active');
+            document.getElementById('wrapper').classList.add('pro-active');
+          }
           updateAccountButton();
-          showModal('✨ Welcome!', `<p>Successfully signed in as ${currentUser.name || currentUser.email}!</p>`);
           window.removeEventListener('message', handleOAuthMessage);
           if (popup) popup.close();
         } else if (event.data.type === 'oauth-error') {
@@ -1211,6 +2306,15 @@ crownButton.onclick = () => {
       <p>You are already a PRO user!</p>
       <p>All premium features are unlocked.</p>
     `);
+    return;
+  }
+  
+  // PRO 활성화하려면 로그인 필요
+  if (!currentUser) {
+    showModal('🔒 Login Required', `
+      <p>You need to sign in to activate PRO.</p>
+      <p>PRO status will be synced across all your devices.</p>
+    `, () => accountButton.click());
     return;
   }
   
@@ -1248,20 +2352,20 @@ crownButton.onclick = () => {
     if (typeof turnstile !== 'undefined') {
       turnstileWidgetId = turnstile.render('#pro-turnstile-widget', {
         sitekey: TURNSTILE_SITE_KEY,
-        theme: 'light',
+        theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
       });
     }
   }, 100);
 
 
-
-  const proKeyInput = box.querySelector('#pro-key-input');
+  const proKeyInput = document.querySelector('#pro-key-input');
   const activateButton = box.querySelector('#activate-pro-button');
   const keyError = box.querySelector('#pro-key-error');
   
 activateButton.onclick = async (e) => {
   e.preventDefault(); // 🚀 form의 기본 동작(새로고침 + GET요청) 막기
 
+  
     
     const key = proKeyInput.value.trim();
     
@@ -1307,8 +2411,20 @@ activateButton.onclick = async (e) => {
       const result = await response.json();
       
       if (result.success) {
+        // PRO 상태를 서버에 저장
+        await fetch(`${AUTH_API_URL}/set-pro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: currentUser.email, 
+            isPro: true 
+          }),
+        });
+        
         localStorage.setItem('isPro', 'true');
         isPro = true;
+        currentUser.isPro = true;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
         
         const promoBar = document.querySelector('.promo-bar');
         if (promoBar) promoBar.classList.add('hidden');
@@ -1320,7 +2436,7 @@ activateButton.onclick = async (e) => {
         document.body.removeChild(modal);
         showModal('🎉 Welcome to PRO', `
           <p>Welcome to RandomSeats PRO!</p>
-          <p>All premium features are now unlocked.</p>
+          <p>All premium features are now unlocked across all your devices.</p>
         `);
       } else {
         keyError.textContent = result.error || 'Invalid PRO key';
