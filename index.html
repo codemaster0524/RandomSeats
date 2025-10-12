@@ -1112,10 +1112,17 @@ activateButton.onclick = async (e) => {
     try {
       const response = await fetch(WORKER_API_URL, {
         method: 'POST',
-          mode: 'cors', // ✅ 이 줄 추가!!
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'cors',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ key, captchaToken }),
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       
       const result = await response.json();
       
@@ -1138,7 +1145,14 @@ activateButton.onclick = async (e) => {
         turnstile.reset(turnstileWidgetId);
       }
     } catch (error) {
-      keyError.textContent = 'Network error. Please try again.';
+      console.error('Activation error:', error);
+      
+      // 서버 응답이 있으면 자세히 표시
+      if (error.message.includes('HTTP')) {
+        keyError.textContent = `Server Error: ${error.message}. Check Cloudflare Workers logs for details.`;
+      } else {
+        keyError.textContent = `Error: ${error.message}`;
+      }
       keyError.classList.add('show');
       activateButton.disabled = false;
       activateButton.textContent = 'Activate PRO';
