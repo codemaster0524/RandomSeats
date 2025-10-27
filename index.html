@@ -1326,7 +1326,6 @@ accountButton.onclick = () => {
       </p>
       <div style="background: #f9fafb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
         <p style="margin-bottom: 8px;"><strong>Email:</strong> ${currentUser.email}</p>
-        <p style="margin-bottom: 8px;"><strong>Provider:</strong> ${currentUser.provider}</p>
         <p><strong>PRO Status:</strong> ${isPro ? '<span style="color: #f59e0b;">👑 Active</span>' : 'Free'}</p>
       </div>
       <button id="change-password-button" style="background: #3b82f6; margin-top: 12px;">🔑 Change Password</button>
@@ -1372,49 +1371,33 @@ accountButton.onclick = () => {
     
     box.querySelector('#close-account').onclick = () => document.body.removeChild(modal);
   } else {
-    // 로그인 안되어있으면 로그인 옵션 표시
+    // 로그인 안되어있으면 로그인/회원가입 옵션 표시
     const modal = document.createElement('div');
     modal.className = 'modal';
     const box = document.createElement('div');
     box.className = 'modal-box';
     box.innerHTML = `
-      <h2>👤 Sign In</h2>
-      <p>Sign in to sync your PRO status across devices.</p>
-      <button id="google-login" style="background: #4285f4; margin-top: 20px;">
-        <i class="fa-brands fa-google"></i> Sign in with Google
+      <h2>👤 Account</h2>
+      <p>Sign in or create a new account to sync your PRO status across devices.</p>
+      <button id="email-signin" style="background: #10b981; margin-top: 20px;">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In with Email
       </button>
-      <button id="email-login" style="background: #10b981; margin-top: 12px;">
-        <i class="fa-solid fa-envelope"></i> Sign in with Email
-      </button>
-      <button id="microsoft-login" style="background: #0078d4; margin-top: 12px;">
-        <i class="fa-brands fa-microsoft"></i> Sign in with Microsoft
-      </button>
-      <button id="github-login" style="background: #333; margin-top: 12px;">
-        <i class="fa-brands fa-github"></i> Sign in with GitHub
+      <button id="email-signup" style="background: #3b82f6; margin-top: 12px;">
+        <i class="fa-solid fa-user-plus"></i> Sign Up with Email
       </button>
       <button id="close-login" style="background: #e2e8f0; color: #4a5568; margin-top: 12px;">Cancel</button>
     `;
     modal.appendChild(box);
     document.body.appendChild(modal);
     
-    box.querySelector('#google-login').onclick = () => {
+    box.querySelector('#email-signin').onclick = () => {
       document.body.removeChild(modal);
-      handleOAuthLogin('google');
+      handleEmailSignIn();
     };
     
-    box.querySelector('#email-login').onclick = () => {
+    box.querySelector('#email-signup').onclick = () => {
       document.body.removeChild(modal);
-      handleEmailLogin();
-    };
-    
-    box.querySelector('#microsoft-login').onclick = () => {
-      document.body.removeChild(modal);
-      showModal('🚧 Coming Soon', '<p>Microsoft login is currently under development.</p><p>Please use Google, Email, or GitHub login instead.</p>');
-    };
-    
-    box.querySelector('#github-login').onclick = () => {
-      document.body.removeChild(modal);
-      handleOAuthLogin('github');
+      handleEmailSignUp();
     };
     
     box.querySelector('#close-login').onclick = () => document.body.removeChild(modal);
@@ -2062,15 +2045,15 @@ function showDeleteCodeModal(email) {
   cancelBtn.onclick = () => document.body.removeChild(modal);
 }
 
-// 이메일 로그인 처리
-async function handleEmailLogin() {
+// 이메일 로그인 처리 (Sign In)
+async function handleEmailSignIn() {
   const modal = document.createElement('div');
   modal.className = 'modal';
   const box = document.createElement('div');
   box.className = 'modal-box';
   box.innerHTML = `
-    <h2>📧 Email Login</h2>
-    <p style="margin-bottom: 16px;">Enter your email to sign in</p>
+  <h2>📧 Sign In</h2>
+  <p style="margin-bottom: 16px;">Enter your email and password to sign in</p>
     <input type="email" id="email-input" placeholder="your@email.com" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
     <input type="password" id="password-input" placeholder="Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px;" />
     <div id="password-strength" style="margin-bottom: 8px; font-size: 12px; display: none;"></div>
@@ -2238,7 +2221,255 @@ async function handleEmailLogin() {
   box.querySelector('#close-email-login').onclick = () => document.body.removeChild(modal);
 }
 
-// OAuth 로그인 처리
+// 이메일 회원가입 처리 (Sign Up)
+async function handleEmailSignUp() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = `
+    <h2>📝 Sign Up</h2>
+    <p style="margin-bottom: 16px;">Create a new account</p>
+    <input type="email" id="signup-email" placeholder="your@email.com" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+    <input type="password" id="signup-password" placeholder="Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px;" />
+    <div id="signup-password-strength" style="margin-bottom: 8px; font-size: 12px; display: none;"></div>
+    <div id="signup-password-requirements" style="margin-bottom: 12px; font-size: 12px; color: #6b7280; display: none;">
+      <p style="font-weight: 600; margin-bottom: 4px;">Password must contain:</p>
+      <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+        <li id="signup-req-length">At least 8 characters</li>
+        <li id="signup-req-upper">One uppercase letter (A-Z)</li>
+        <li id="signup-req-lower">One lowercase letter (a-z)</li>
+        <li id="signup-req-number">One number (0-9)</li>
+        <li id="signup-req-special">One special character (!@#$%...)</li>
+      </ul>
+    </div>
+    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;" />
+    <div class="captcha-container" id="signup-captcha-container">
+      <div id="signup-turnstile-widget"></div>
+    </div>
+    <div class="error-message" id="signup-error"></div>
+    <button id="signup-submit" style="margin-top: 12px;">Send Verification Code</button>
+    <button id="close-signup" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  // Turnstile 위젯 렌더링
+  let signupTurnstileId;
+  setTimeout(() => {
+    if (typeof turnstile !== 'undefined') {
+      signupTurnstileId = turnstile.render('#signup-turnstile-widget', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      });
+    }
+  }, 100);
+  
+  const emailInput = box.querySelector('#signup-email');
+  const passwordInput = box.querySelector('#signup-password');
+  const confirmPasswordInput = box.querySelector('#signup-confirm-password');
+  const submitBtn = box.querySelector('#signup-submit');
+  const errorMsg = box.querySelector('#signup-error');
+  const strengthDiv = box.querySelector('#signup-password-strength');
+  const requirementsDiv = box.querySelector('#signup-password-requirements');
+  
+  // 비밀번호 입력 시 실시간 강도 표시 및 조건 체크
+  passwordInput.oninput = () => {
+    const password = passwordInput.value;
+    
+    if (password.length > 0) {
+      strengthDiv.style.display = 'block';
+      requirementsDiv.style.display = 'block';
+      
+      // 강도 표시
+      const strength = getPasswordStrength(password);
+      strengthDiv.innerHTML = `Password Strength: <strong style="color: ${strength.color};">${strength.text}</strong>`;
+      
+      // 조건 체크
+      const reqLength = box.querySelector('#signup-req-length');
+      const reqUpper = box.querySelector('#signup-req-upper');
+      const reqLower = box.querySelector('#signup-req-lower');
+      const reqNumber = box.querySelector('#signup-req-number');
+      const reqSpecial = box.querySelector('#signup-req-special');
+      
+      reqLength.style.color = password.length >= 8 ? '#10b981' : '#6b7280';
+      reqLength.innerHTML = password.length >= 8 ? '✅ At least 8 characters' : 'At least 8 characters';
+      
+      reqUpper.style.color = /[A-Z]/.test(password) ? '#10b981' : '#6b7280';
+      reqUpper.innerHTML = /[A-Z]/.test(password) ? '✅ One uppercase letter (A-Z)' : 'One uppercase letter (A-Z)';
+      
+      reqLower.style.color = /[a-z]/.test(password) ? '#10b981' : '#6b7280';
+      reqLower.innerHTML = /[a-z]/.test(password) ? '✅ One lowercase letter (a-z)' : 'One lowercase letter (a-z)';
+      
+      reqNumber.style.color = /[0-9]/.test(password) ? '#10b981' : '#6b7280';
+      reqNumber.innerHTML = /[0-9]/.test(password) ? '✅ One number (0-9)' : 'One number (0-9)';
+      
+      reqSpecial.style.color = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/''`;~`]/.test(password) ? '#10b981' : '#6b7280';
+      reqSpecial.innerHTML = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/''`;~`]/.test(password) ? '✅ One special character (!@#$%...)' : 'One special character (!@#$%...)';
+    } else {
+      strengthDiv.style.display = 'none';
+      requirementsDiv.style.display = 'none';
+    }
+  };
+  
+  submitBtn.onclick = async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    
+    if (!email || !password || !confirmPassword) {
+      errorMsg.textContent = 'All fields are required';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    // 비밀번호 유효성 검사
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      errorMsg.innerHTML = '<strong>Password requirements not met:</strong><br>' + validation.errors.join('<br>');
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      errorMsg.textContent = 'Passwords do not match';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    // 캡차 확인
+    let captchaToken;
+    try {
+      captchaToken = turnstile.getResponse(signupTurnstileId);
+      if (!captchaToken) {
+        errorMsg.textContent = 'Please complete the captcha';
+        errorMsg.classList.add('show');
+        return;
+      }
+    } catch (e) {
+      errorMsg.textContent = 'Captcha error. Please refresh the page.';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending code...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/signup-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, captchaToken }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        document.body.removeChild(modal);
+        // 다음 단계: 인증 코드 입력
+        showSignUpCodeModal(email, password);
+      } else {
+        errorMsg.textContent = data.error || 'Sign up failed';
+        errorMsg.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Verification Code';
+        if (signupTurnstileId) turnstile.reset(signupTurnstileId);
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Verification Code';
+      if (signupTurnstileId) turnstile.reset(signupTurnstileId);
+    }
+  };
+  
+  box.querySelector('#close-signup').onclick = () => document.body.removeChild(modal);
+}
+
+// 회원가입 인증 코드 확인 모달
+function showSignUpCodeModal(email, password) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const box = document.createElement('div');
+  box.className = 'modal-box';
+  
+  box.innerHTML = `
+    <h2>📬 Verify Your Email</h2>
+    <p style="margin-bottom: 16px;">A 6-digit code has been sent to <strong>${email}</strong></p>
+    <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Check your email (including spam folder)</p>
+    <input type="text" id="signup-code" placeholder="123456" maxlength="6" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; text-align: center; font-size: 18px; letter-spacing: 4px; font-family: monospace;" />
+    <div class="error-message" id="signup-code-error"></div>
+    <button id="confirm-signup" style="background: #3b82f6; margin-top: 12px;">Complete Sign Up</button>
+    <button id="resend-signup-code" style="background: #8b5cf6; margin-top: 12px;">Resend Code</button>
+    <button id="cancel-signup-code" style="background: #e2e8f0; color: #4a5568;">Cancel</button>
+  `;
+  
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  
+  const codeInput = box.querySelector('#signup-code');
+  const confirmBtn = box.querySelector('#confirm-signup');
+  const resendBtn = box.querySelector('#resend-signup-code');
+  const cancelBtn = box.querySelector('#cancel-signup-code');
+  const errorMsg = box.querySelector('#signup-code-error');
+  
+  // 숫자만 입력 가능
+  codeInput.oninput = () => {
+    codeInput.value = codeInput.value.replace(/[^0-9]/g, '');
+  };
+  
+  confirmBtn.onclick = async () => {
+    const code = codeInput.value.trim();
+    
+    if (!code || code.length !== 6) {
+      errorMsg.textContent = 'Please enter the 6-digit code';
+      errorMsg.classList.add('show');
+      return;
+    }
+    
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Verifying...';
+    
+    try {
+      const response = await fetch(`${AUTH_API_URL}/signup-confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        currentUser = data.user;
+        isPro = data.user.isPro || false;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateAccountButton();
+        document.body.removeChild(modal);
+        showModal('✅ Sign Up Successful', '<p>Welcome to RandomSeats!</p><p>Your account has been created successfully.</p>');
+      } else {
+        errorMsg.textContent = data.error || 'Invalid or expired code';
+        errorMsg.classList.add('show');
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Complete Sign Up';
+      }
+    } catch (error) {
+      errorMsg.textContent = 'Network error. Please try again.';
+      errorMsg.classList.add('show');
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Complete Sign Up';
+    }
+  };
+  
+  resendBtn.onclick = () => {
+    document.body.removeChild(modal);
+    handleEmailSignUp();
+  };
+  
+  cancelBtn.onclick = () => document.body.removeChild(modal);
+}
+
+// OAuth 로그인 처리 (삭제됨 - 사용 안함)
 async function handleOAuthLogin(provider) {
   try {
     // 1. 백엔드에서 OAuth URL 가져오기
